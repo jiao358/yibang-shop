@@ -70,32 +70,32 @@
       {
         "pagePath": "pages/index/index",
         "text": "首页",
-        "iconPath": "static/icons/home.png",
-        "selectedIconPath": "static/icons/home-active.png"
+        "iconPath": "static/icons/home.svg",
+        "selectedIconPath": "static/icons/home-active.svg"
       },
       {
         "pagePath": "pages/mall/mall",
         "text": "商品分组",
-        "iconPath": "static/icons/mall.png",
-        "selectedIconPath": "static/icons/mall-active.png"
+        "iconPath": "static/icons/mall.svg",
+        "selectedIconPath": "static/icons/mall-active.svg"
       },
       {
         "pagePath": "pages/task/task",
         "text": "任务",
-        "iconPath": "static/icons/task.png",
-        "selectedIconPath": "static/icons/task-active.png"
+        "iconPath": "static/icons/task.svg",
+        "selectedIconPath": "static/icons/task-active.svg"
       },
       {
         "pagePath": "pages/order/order",
         "text": "订单",
-        "iconPath": "static/icons/order.png",
-        "selectedIconPath": "static/icons/order-active.png"
+        "iconPath": "static/icons/order.svg",
+        "selectedIconPath": "static/icons/order-active.svg"
       },
       {
         "pagePath": "pages/profile/profile",
         "text": "我的",
-        "iconPath": "static/icons/profile.png",
-        "selectedIconPath": "static/icons/profile-active.png"
+        "iconPath": "static/icons/profile.svg",
+        "selectedIconPath": "static/icons/profile-active.svg"
       }
     ]
   },
