@@ -1,0 +1,5 @@
+---
+description:
+globs: 禁止你做任何用户没有明确指示的事情
+alwaysApply: true
+---

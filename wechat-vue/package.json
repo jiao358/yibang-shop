@@ -1,0 +1,38 @@
+{
+  "name": "yibang-taskmall-miniprogram",
+  "version": "1.0.0",
+  "description": "懿邦任务商城微信小程序",
+  "main": "main.js",
+  "scripts": {
+    "dev": "npm run dev:mp-weixin",
+    "build": "npm run build:mp-weixin",
+    "dev:mp-weixin": "uni build -p mp-weixin --watch",
+    "build:mp-weixin": "uni build -p mp-weixin",
+    "dev:h5": "uni build -p h5 --watch",
+    "build:h5": "uni build -p h5"
+  },
+  "dependencies": {
+    "@dcloudio/uni-app": "3.0.0-alpha-4080120250821001",
+    "@dcloudio/uni-components": "3.0.0-alpha-4080120250821001",
+    "@dcloudio/uni-h5": "3.0.0-alpha-4080120250821001",
+    "@dcloudio/uni-mp-weixin": "3.0.0-alpha-4080120250821001",
+    "pinia": "^2.1.7",
+    "vant-weapp": "^0.5.29"
+  },
+  "devDependencies": {
+    "@dcloudio/types": "^3.4.8",
+    "@dcloudio/uni-automator": "3.0.0-alpha-4080120250821001",
+    "@dcloudio/uni-cli-shared": "3.0.0-alpha-4080120250821001",
+    "@dcloudio/vite-plugin-uni": "3.0.0-alpha-4080120250821001",
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0",
+    "vite": "^5.0.0"
+  },
+  "browserslist": [
+    "Android >= 4.4",
+    "ios >= 9"
+  ],
+  "uni-app": {
+    "scripts": {}
+  }
+}

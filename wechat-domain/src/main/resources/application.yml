@@ -1,0 +1,115 @@
+# 懿邦任务商城应用配置
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: yibang-taskmall
+  
+  # 数据源配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/yibang_taskmall?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      auto-commit: true
+      idle-timeout: 30000
+      pool-name: DatebookHikariCP
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+
+  # Redis配置
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: 
+      database: 0
+      timeout: 10000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-wait: -1ms
+          max-idle: 8
+          min-idle: 0
+
+  # RabbitMQ配置
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    connection-timeout: 15000
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    template:
+      mandatory: true
+
+# MyBatis Plus配置
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    call-setters-on-nulls: true
+    jdbc-type-for-null: 'null'
+  global-config:
+    db-config:
+      id-type: AUTO
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  mapper-locations: classpath*:mapper/*.xml
+
+# 日志配置
+logging:
+  level:
+    com.yibang.taskmall: debug
+    org.springframework.security: debug
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n'
+
+# 管理端点配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+# 微信小程序配置
+wechat:
+  miniapp:
+    app-id: your-app-id
+    app-secret: your-app-secret
+  pay:
+    mch-id: your-mch-id
+    api-key: your-api-key
+    cert-path: classpath:cert/apiclient_cert.p12
+
+# 广告平台配置
+pangle:
+  app-id: your-pangle-app-id
+  app-secret: your-pangle-app-secret
+
+# 系统配置
+system:
+  jwt:
+    secret: yibang-taskmall-secret-key-2024
+    expiration: 86400 # 24小时
+    refresh-expiration: 604800 # 7天
+  task:
+    max-daily-claims: 10
+    verification-timeout: 300 # 5分钟
+  withdrawal:
+    min-amount: 1000 # 最低提现金额（分）
+    max-amount: 100000 # 最高提现金额（分）
+    fee-rate: 0.006 # 提现手续费率
