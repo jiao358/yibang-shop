@@ -65,6 +65,12 @@
       "style": {
         "navigationBarTitleText": "地址列表"
       }
+    },
+    {
+      "path": "pages/order-submit/order-submit",
+      "style": {
+        "navigationBarTitleText": "确认订单"
+      }
     }
   ],
   "globalStyle": {
