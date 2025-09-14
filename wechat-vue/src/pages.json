@@ -15,7 +15,7 @@
     {
       "path": "pages/mall/mall",
       "style": {
-        "navigationBarTitleText": "商城"
+        "navigationBarTitleText": "商品分组"
       }
     },
     {
@@ -74,22 +74,28 @@
         "selectedIconPath": "static/icons/home-active.png"
       },
       {
+        "pagePath": "pages/mall/mall",
+        "text": "商品分组",
+        "iconPath": "static/icons/mall.png",
+        "selectedIconPath": "static/icons/mall-active.png"
+      },
+      {
         "pagePath": "pages/task/task",
         "text": "任务",
         "iconPath": "static/icons/task.png",
         "selectedIconPath": "static/icons/task-active.png"
       },
       {
-        "pagePath": "pages/mall/mall",
-        "text": "商城",
-        "iconPath": "static/icons/mall.png",
-        "selectedIconPath": "static/icons/mall-active.png"
+        "pagePath": "pages/order/order",
+        "text": "订单",
+        "iconPath": "static/icons/order.png",
+        "selectedIconPath": "static/icons/order-active.png"
       },
       {
-        "pagePath": "pages/earnings/earnings",
-        "text": "收益",
-        "iconPath": "static/icons/earnings.png",
-        "selectedIconPath": "static/icons/earnings-active.png"
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "static/icons/profile.png",
+        "selectedIconPath": "static/icons/profile-active.png"
       }
     ]
   },
