@@ -36,9 +36,24 @@
 
     <!-- 轮播图 -->
     <view class="banner-section">
-      <swiper class="banner-swiper" indicator-dots="true" autoplay="true" interval="3000" duration="500">
-        <swiper-item v-for="(banner, index) in banners" :key="index" @click="onBannerClick(banner)">
-          <image :src="banner.image" mode="aspectFill" class="banner-image"></image>
+      <swiper 
+        class="banner-swiper" 
+        indicator-dots="true" 
+        autoplay="true" 
+        interval="4000" 
+        duration="500"
+        circular="true"
+        indicator-color="rgba(255, 255, 255, 0.5)"
+        indicator-active-color="#FF6B6B"
+      >
+        <swiper-item v-for="(banner, index) in banners" :key="banner.id" @click="onBannerClick(banner)">
+          <view class="banner-item">
+            <image :src="banner.image" mode="aspectFill" class="banner-image"></image>
+            <view class="banner-content">
+              <text class="banner-title">{{ banner.title }}</text>
+              <text class="banner-subtitle">{{ banner.subtitle }}</text>
+            </view>
+          </view>
         </swiper-item>
       </swiper>
     </view>
@@ -106,8 +121,34 @@ export default {
       { value: '¥128', label: '总收益' }
     ])
     const banners = ref([
-      { id: 1, image: '/static/images/banner1.jpg', link: '/pages/task/task' },
-      { id: 2, image: '/static/images/banner2.jpg', link: '/pages/mall/mall' }
+      { 
+        id: 1, 
+        image: '/static/images/banner1.jpg', 
+        title: '欢迎来到我们的商店',
+        subtitle: '发现精彩产品和优惠活动',
+        link: '/pages/task/task' 
+      },
+      { 
+        id: 2, 
+        image: '/static/images/banner2.jpg', 
+        title: '特别优惠',
+        subtitle: '所有商品最高5折优惠',
+        link: '/pages/mall/mall' 
+      },
+      { 
+        id: 3, 
+        image: '/static/images/banner3.jpg', 
+        title: '新品上市',
+        subtitle: '查看我们的最新系列',
+        link: '/pages/mall/mall' 
+      },
+      { 
+        id: 4, 
+        image: '/static/images/banner4.jpg', 
+        title: '免费配送',
+        subtitle: '订单满50元即可享受免费配送',
+        link: '/pages/order/order' 
+      }
     ])
     const recommendedTasks = ref([])
 
@@ -354,11 +395,43 @@ export default {
   height: 300rpx;
   border-radius: 16rpx;
   overflow: hidden;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+}
+
+.banner-item {
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 
 .banner-image {
   width: 100%;
   height: 100%;
+}
+
+.banner-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
+  padding: 40rpx 30rpx 30rpx;
+  color: #FFFFFF;
+}
+
+.banner-title {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 600;
+  margin-bottom: 8rpx;
+  color: #FFFFFF;
+}
+
+.banner-subtitle {
+  display: block;
+  font-size: 24rpx;
+  opacity: 0.9;
+  color: #FFFFFF;
 }
 
 .quick-actions {
