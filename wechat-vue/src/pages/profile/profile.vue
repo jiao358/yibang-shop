@@ -1,154 +1,98 @@
 <template>
   <view class="profile-page">
-    <!-- 用户信息卡片 -->
-    <view class="user-card">
-      <view class="user-info">
-        <image class="avatar" :src="userInfo.avatar || '/static/images/default-avatar.png'" mode="aspectFill"></image>
-        <view class="user-details">
-          <text class="username">{{ userInfo.nickname || '用户' }}</text>
-          <text class="user-level">{{ getUserLevelText(userInfo.level) }}</text>
-          <text class="user-id">ID: {{ userInfo.id || '123456' }}</text>
+    <!-- 状态栏 -->
+    <view class="status-bar">
+      <text class="time">17:29</text>
+      <view class="battery">
+        <text class="battery-text">100</text>
+        <view class="battery-bar">
+          <view class="battery-fill"></view>
         </view>
       </view>
-      <view class="user-stats">
+    </view>
+
+    <!-- 头部 -->
+    <view class="header">
+      <view class="header-actions">
+        <image src="/static/icons/more.png" class="action-icon" mode="aspectFit"></image>
+        <image src="/static/icons/target.png" class="action-icon" mode="aspectFit"></image>
+      </view>
+    </view>
+
+    <!-- 用户信息区域 -->
+    <view class="user-section">
+      <view class="user-info">
+        <view class="user-avatar">
+          <image 
+            :src="userInfo.avatar || '/static/images/default-avatar.png'"
+            class="avatar-image"
+            mode="aspectFill"
+          ></image>
+        </view>
+        <view class="user-details">
+          <text class="username">{{ userInfo.nickname || '微信用户' }}</text>
+          <text class="user-id">ID：{{ userInfo.id || '3585076' }}</text>
+          <text class="user-desc">{{ userInfo.desc || '暂无简介' }}</text>
+        </view>
+        <image src="/static/icons/target.png" class="target-icon" mode="aspectFit"></image>
+      </view>
+
+      <!-- 余额统计 -->
+      <view class="balance-stats">
         <view class="stat-item">
-          <text class="stat-value">{{ userStats.totalTasks || 0 }}</text>
-          <text class="stat-label">完成任务</text>
+          <text class="stat-value">¥{{ userInfo.balance || '0.00' }}</text>
+          <text class="stat-label">余额</text>
         </view>
         <view class="stat-item">
-          <text class="stat-value">¥{{ userStats.totalEarnings || '0.00' }}</text>
-          <text class="stat-label">累计收益</text>
+          <text class="stat-value">{{ userInfo.completedOrders || '0' }}</text>
+          <text class="stat-label">完成 {{ userInfo.completedOrders || '0' }} 单</text>
         </view>
         <view class="stat-item">
-          <text class="stat-value">{{ userStats.signInDays || 0 }}</text>
-          <text class="stat-label">签到天数</text>
+          <text class="stat-value">¥{{ userInfo.inviteReward || '0.00' }}</text>
+          <text class="stat-label">邀请奖励</text>
+        </view>
+      </view>
+
+      <!-- 认证区域 -->
+      <view class="verification-section">
+        <view class="verification-content">
+          <view class="verification-icon">
+            <text class="icon-text">认</text>
+          </view>
+          <text class="verification-text">请先完成模特认证</text>
+        </view>
+        <button class="verify-btn" @click="goToVerification">
+          立即认证
+        </button>
+      </view>
+
+      <!-- 推广区域 -->
+      <view class="promotion-section">
+        <view class="promotion-content">
+          <view class="promotion-text">
+            <text class="promotion-title">邀联通告</text>
+            <text class="promotion-desc">海量商家等您/种草通告，邀请与您合作</text>
+          </view>
+          <button class="join-btn" @click="goToInvite">
+            立即加入
+          </button>
         </view>
       </view>
     </view>
 
     <!-- 功能菜单 -->
-    <view class="menu-sections">
-      <!-- 账户管理 -->
-      <view class="menu-section">
-        <view class="section-title">账户管理</view>
-        <view class="menu-list">
-          <view class="menu-item" @click="goToUserInfo">
-            <image src="/static/icons/user-info.png" mode="aspectFit" class="menu-icon"></image>
-            <text class="menu-text">个人信息</text>
-            <text class="menu-arrow">></text>
-          </view>
-          <view class="menu-item" @click="goToSecurity">
-            <image src="/static/icons/security.png" mode="aspectFit" class="menu-icon"></image>
-            <text class="menu-text">安全设置</text>
-            <text class="menu-arrow">></text>
-          </view>
-          <view class="menu-item" @click="goToSigning" v-if="!userInfo.isSigned">
-            <image src="/static/icons/signing.png" mode="aspectFit" class="menu-icon"></image>
-            <text class="menu-text">申请签约</text>
-            <text class="menu-arrow">></text>
-          </view>
-          <view class="menu-item" @click="goToSigningStatus" v-if="userInfo.isSigned">
-            <image src="/static/icons/signing-status.png" mode="aspectFit" class="menu-icon"></image>
-            <text class="menu-text">签约状态</text>
-            <text class="menu-arrow">></text>
-          </view>
+    <view class="menu-section">
+      <view class="menu-grid">
+        <view 
+          v-for="(menu, index) in menuItems" 
+          :key="index"
+          class="menu-item"
+          @click="handleMenuClick(menu.action)"
+        >
+          <image :src="menu.icon" class="menu-icon" mode="aspectFit"></image>
+          <text class="menu-text">{{ menu.name }}</text>
         </view>
       </view>
-
-      <!-- 收益相关 -->
-      <view class="menu-section">
-        <view class="section-title">收益相关</view>
-        <view class="menu-list">
-          <view class="menu-item" @click="goToEarnings">
-            <image src="/static/icons/earnings.png" mode="aspectFit" class="menu-icon"></image>
-            <text class="menu-text">收益管理</text>
-            <text class="menu-arrow">></text>
-          </view>
-          <view class="menu-item" @click="goToWithdraw">
-            <image src="/static/icons/withdraw.png" mode="aspectFit" class="menu-icon"></image>
-            <text class="menu-text">提现记录</text>
-            <text class="menu-arrow">></text>
-          </view>
-          <view class="menu-item" @click="goToInvite">
-            <image src="/static/icons/invite.png" mode="aspectFit" class="menu-icon"></image>
-            <text class="menu-text">邀请好友</text>
-            <text class="menu-arrow">></text>
-          </view>
-        </view>
-      </view>
-
-      <!-- 订单相关 -->
-      <view class="menu-section">
-        <view class="section-title">订单相关</view>
-        <view class="menu-list">
-          <view class="menu-item" @click="goToOrders">
-            <image src="/static/icons/orders.png" mode="aspectFit" class="menu-icon"></image>
-            <text class="menu-text">我的订单</text>
-            <text class="menu-arrow">></text>
-          </view>
-          <view class="menu-item" @click="goToFavorites">
-            <image src="/static/icons/favorites.png" mode="aspectFit" class="menu-icon"></image>
-            <text class="menu-text">我的收藏</text>
-            <text class="menu-arrow">></text>
-          </view>
-          <view class="menu-item" @click="goToBrowsingHistory">
-            <image src="/static/icons/history.png" mode="aspectFit" class="menu-icon"></image>
-            <text class="menu-text">浏览历史</text>
-            <text class="menu-arrow">></text>
-          </view>
-        </view>
-      </view>
-
-      <!-- 应用设置 -->
-      <view class="menu-section">
-        <view class="section-title">应用设置</view>
-        <view class="menu-list">
-          <view class="menu-item" @click="goToNotifications">
-            <image src="/static/icons/notifications.png" mode="aspectFit" class="menu-icon"></image>
-            <text class="menu-text">消息通知</text>
-            <view class="menu-right">
-              <switch :checked="notificationSettings.enabled" @change="toggleNotification" color="#FF6B6B" />
-            </view>
-          </view>
-          <view class="menu-item" @click="goToPrivacy">
-            <image src="/static/icons/privacy.png" mode="aspectFit" class="menu-icon"></image>
-            <text class="menu-text">隐私设置</text>
-            <text class="menu-arrow">></text>
-          </view>
-          <view class="menu-item" @click="goToAbout">
-            <image src="/static/icons/about.png" mode="aspectFit" class="menu-icon"></image>
-            <text class="menu-text">关于我们</text>
-            <text class="menu-arrow">></text>
-          </view>
-        </view>
-      </view>
-
-      <!-- 其他功能 -->
-      <view class="menu-section">
-        <view class="section-title">其他功能</view>
-        <view class="menu-list">
-          <view class="menu-item" @click="goToHelp">
-            <image src="/static/icons/help.png" mode="aspectFit" class="menu-icon"></image>
-            <text class="menu-text">帮助中心</text>
-            <text class="menu-arrow">></text>
-          </view>
-          <view class="menu-item" @click="goToFeedback">
-            <image src="/static/icons/feedback.png" mode="aspectFit" class="menu-icon"></image>
-            <text class="menu-text">意见反馈</text>
-            <text class="menu-arrow">></text>
-          </view>
-          <view class="menu-item" @click="goToContact">
-            <image src="/static/icons/contact.png" mode="aspectFit" class="menu-icon"></image>
-            <text class="menu-text">联系我们</text>
-            <text class="menu-arrow">></text>
-          </view>
-        </view>
-      </view>
-    </view>
-
-    <!-- 退出登录 -->
-    <view class="logout-section">
-      <button class="logout-btn" @click="logout">退出登录</button>
     </view>
   </view>
 </template>
@@ -161,190 +105,150 @@ export default {
   name: 'ProfilePage',
   setup() {
     const userStore = useUserStore()
-
-    // 响应式数据
-    const userInfo = ref({})
-    const userStats = ref({})
-    const notificationSettings = ref({
-      enabled: true
+    
+    // 用户信息
+    const userInfo = ref({
+      id: '3585076',
+      nickname: '微信用户',
+      avatar: '',
+      desc: '暂无简介',
+      balance: '0.00',
+      completedOrders: 0,
+      inviteReward: '0.00'
     })
-
-    // 方法
-    const loadUserData = async () => {
+    
+    // 菜单项
+    const menuItems = ref([
+      {
+        name: '网拍相册',
+        icon: '/static/icons/album.png',
+        action: 'album'
+      },
+      {
+        name: '种草相册',
+        icon: '/static/icons/grass.png',
+        action: 'grass'
+      },
+      {
+        name: '意见反馈',
+        icon: '/static/icons/feedback.png',
+        action: 'feedback'
+      },
+      {
+        name: '浏览记录',
+        icon: '/static/icons/history.png',
+        action: 'history'
+      },
+      {
+        name: '收货地址',
+        icon: '/static/icons/address.png',
+        action: 'address'
+      },
+      {
+        name: '通知设置',
+        icon: '/static/icons/notification.png',
+        action: 'notification'
+      },
+      {
+        name: '新手必读',
+        icon: '/static/icons/guide.png',
+        action: 'guide'
+      },
+      {
+        name: '联系客服',
+        icon: '/static/icons/service.png',
+        action: 'service'
+      }
+    ])
+    
+    // 加载用户信息
+    const loadUserInfo = async () => {
       try {
-        // Mock数据
+        await userStore.getUserInfo()
         userInfo.value = {
-          id: '123456',
-          nickname: '用户昵称',
-          avatar: '/static/images/default-avatar.png',
-          level: 1,
-          isSigned: false
+          ...userInfo.value,
+          ...userStore.userInfo
         }
-
-        userStats.value = {
-          totalTasks: 156,
-          totalEarnings: 1256.80,
-          signInDays: 30
-        }
-
       } catch (error) {
-        console.error('加载用户数据失败:', error)
+        console.error('加载用户信息失败:', error)
       }
     }
-
-    const getUserLevelText = (level) => {
-      const levelMap = {
-        0: '普通用户',
-        1: '签约用户',
-        2: 'VIP用户'
+    
+    // 处理菜单点击
+    const handleMenuClick = (action) => {
+      switch (action) {
+        case 'album':
+          uni.navigateTo({
+            url: '/pages/album/album'
+          })
+          break
+        case 'grass':
+          uni.navigateTo({
+            url: '/pages/grass/grass'
+          })
+          break
+        case 'feedback':
+          uni.navigateTo({
+            url: '/pages/feedback/feedback'
+          })
+          break
+        case 'history':
+          uni.navigateTo({
+            url: '/pages/history/history'
+          })
+          break
+        case 'address':
+          uni.navigateTo({
+            url: '/pages/address/address'
+          })
+          break
+        case 'notification':
+          uni.navigateTo({
+            url: '/pages/settings/notification'
+          })
+          break
+        case 'guide':
+          uni.navigateTo({
+            url: '/pages/guide/guide'
+          })
+          break
+        case 'service':
+          uni.navigateTo({
+            url: '/pages/service/service'
+          })
+          break
+        default:
+          uni.showToast({
+            title: '功能开发中',
+            icon: 'none'
+          })
       }
-      return levelMap[level] || '普通用户'
     }
-
-    const toggleNotification = (e) => {
-      notificationSettings.value.enabled = e.detail.value
-      // 这里可以调用API保存设置
-    }
-
-    const goToUserInfo = () => {
+    
+    // 跳转到认证页面
+    const goToVerification = () => {
       uni.navigateTo({
-        url: '/pages/user-info/user-info'
+        url: '/pages/verification/verification'
       })
     }
-
-    const goToSecurity = () => {
-      uni.navigateTo({
-        url: '/pages/security/security'
-      })
-    }
-
-    const goToSigning = () => {
-      uni.navigateTo({
-        url: '/pages/signing/signing'
-      })
-    }
-
-    const goToSigningStatus = () => {
-      uni.navigateTo({
-        url: '/pages/signing-status/signing-status'
-      })
-    }
-
-    const goToEarnings = () => {
-      uni.switchTab({
-        url: '/pages/earnings/earnings'
-      })
-    }
-
-    const goToWithdraw = () => {
-      uni.navigateTo({
-        url: '/pages/withdraw/withdraw'
-      })
-    }
-
+    
+    // 跳转到邀请页面
     const goToInvite = () => {
       uni.navigateTo({
         url: '/pages/invite/invite'
       })
     }
-
-    const goToOrders = () => {
-      uni.navigateTo({
-        url: '/pages/orders/orders'
-      })
-    }
-
-    const goToFavorites = () => {
-      uni.navigateTo({
-        url: '/pages/favorites/favorites'
-      })
-    }
-
-    const goToBrowsingHistory = () => {
-      uni.navigateTo({
-        url: '/pages/browsing-history/browsing-history'
-      })
-    }
-
-    const goToNotifications = () => {
-      uni.navigateTo({
-        url: '/pages/notifications/notifications'
-      })
-    }
-
-    const goToPrivacy = () => {
-      uni.navigateTo({
-        url: '/pages/privacy/privacy'
-      })
-    }
-
-    const goToAbout = () => {
-      uni.navigateTo({
-        url: '/pages/about/about'
-      })
-    }
-
-    const goToHelp = () => {
-      uni.navigateTo({
-        url: '/pages/help/help'
-      })
-    }
-
-    const goToFeedback = () => {
-      uni.navigateTo({
-        url: '/pages/feedback/feedback'
-      })
-    }
-
-    const goToContact = () => {
-      uni.navigateTo({
-        url: '/pages/contact/contact'
-      })
-    }
-
-    const logout = () => {
-      uni.showModal({
-        title: '确认退出',
-        content: '确定要退出登录吗？',
-        success: (res) => {
-          if (res.confirm) {
-            userStore.logout()
-            uni.reLaunch({
-              url: '/pages/login/login'
-            })
-          }
-        }
-      })
-    }
-
-    // 生命周期
+    
     onMounted(() => {
-      loadUserData()
+      loadUserInfo()
     })
-
+    
     return {
       userInfo,
-      userStats,
-      notificationSettings,
-      getUserLevelText,
-      toggleNotification,
-      goToUserInfo,
-      goToSecurity,
-      goToSigning,
-      goToSigningStatus,
-      goToEarnings,
-      goToWithdraw,
-      goToInvite,
-      goToOrders,
-      goToFavorites,
-      goToBrowsingHistory,
-      goToNotifications,
-      goToPrivacy,
-      goToAbout,
-      goToHelp,
-      goToFeedback,
-      goToContact,
-      logout
+      menuItems,
+      handleMenuClick,
+      goToVerification,
+      goToInvite
     }
   }
 }
@@ -354,153 +258,252 @@ export default {
 .profile-page {
   background: #F5F5F5;
   min-height: 100vh;
-  padding-bottom: 120rpx;
 }
 
-.user-card {
-  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
-  margin: 20rpx 30rpx;
-  padding: 40rpx;
-  border-radius: 20rpx;
-  color: #FFFFFF;
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8rpx 32rpx;
+  background: #FFFFFF;
+  font-size: 24rpx;
+  color: #666666;
+}
+
+.battery {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.battery-bar {
+  width: 32rpx;
+  height: 16rpx;
+  border: 1rpx solid #999999;
+  border-radius: 4rpx;
+  overflow: hidden;
+}
+
+.battery-fill {
+  width: 100%;
+  height: 100%;
+  background: #4CAF50;
+  border-radius: 2rpx;
+}
+
+.header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 24rpx 32rpx;
+  background: #FFFFFF;
+}
+
+.header-actions {
+  display: flex;
+  gap: 24rpx;
+}
+
+.action-icon {
+  width: 40rpx;
+  height: 40rpx;
+}
+
+.user-section {
+  background: #FFFFFF;
+  padding: 48rpx 32rpx;
 }
 
 .user-info {
   display: flex;
   align-items: center;
-  margin-bottom: 30rpx;
+  gap: 32rpx;
+  margin-bottom: 48rpx;
 }
 
-.avatar {
-  width: 120rpx;
-  height: 120rpx;
-  border-radius: 60rpx;
-  margin-right: 24rpx;
-  border: 4rpx solid rgba(255, 255, 255, 0.3);
+.user-avatar {
+  width: 128rpx;
+  height: 128rpx;
+  border-radius: 64rpx;
+  background: #FFB6C1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
 }
 
 .user-details {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
 }
 
 .username {
   font-size: 36rpx;
-  font-weight: 700;
-  margin-bottom: 8rpx;
-  display: block;
-}
-
-.user-level {
-  font-size: 24rpx;
-  opacity: 0.8;
-  margin-bottom: 8rpx;
-  display: block;
+  color: #000000;
+  font-weight: 600;
 }
 
 .user-id {
-  font-size: 22rpx;
-  opacity: 0.6;
+  font-size: 24rpx;
+  color: #999999;
 }
 
-.user-stats {
-  display: flex;
-  justify-content: space-between;
-}
-
-.stat-item {
-  text-align: center;
-  flex: 1;
-}
-
-.stat-value {
-  font-size: 32rpx;
-  font-weight: 700;
-  margin-bottom: 8rpx;
-  display: block;
-}
-
-.stat-label {
-  font-size: 22rpx;
-  opacity: 0.8;
-}
-
-.menu-sections {
-  padding: 0 30rpx;
-}
-
-.menu-section {
-  margin-bottom: 20rpx;
-}
-
-.section-title {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: #333333;
-  margin-bottom: 16rpx;
-  padding-left: 8rpx;
-}
-
-.menu-list {
-  background: #FFFFFF;
-  border-radius: 16rpx;
-  overflow: hidden;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
-}
-
-.menu-item {
-  display: flex;
-  align-items: center;
-  padding: 32rpx 24rpx;
-  border-bottom: 1rpx solid #F0F0F0;
-  position: relative;
-}
-
-.menu-item:last-child {
-  border-bottom: none;
-}
-
-.menu-item:active {
-  background: #F8F9FA;
-}
-
-.menu-icon {
-  width: 40rpx;
-  height: 40rpx;
-  margin-right: 24rpx;
-}
-
-.menu-text {
-  flex: 1;
-  font-size: 28rpx;
-  color: #333333;
-}
-
-.menu-arrow {
+.user-desc {
   font-size: 24rpx;
   color: #CCCCCC;
 }
 
-.menu-right {
+.target-icon {
+  width: 48rpx;
+  height: 48rpx;
+}
+
+.balance-stats {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 48rpx;
+  padding: 0 32rpx;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.stat-value {
+  font-size: 40rpx;
+  color: #FF6B6B;
+  font-weight: 600;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: #999999;
+}
+
+.verification-section {
   display: flex;
   align-items: center;
-}
-
-.logout-section {
-  padding: 40rpx 30rpx;
-}
-
-.logout-btn {
-  width: 100%;
-  background: #FFFFFF;
-  color: #DC3545;
+  justify-content: space-between;
   padding: 24rpx;
+  background: #FFF0F5;
   border-radius: 16rpx;
-  font-size: 28rpx;
-  font-weight: 600;
-  border: 2rpx solid #DC3545;
+  margin-bottom: 32rpx;
 }
 
-.logout-btn:active {
-  background: #F8D7DA;
+.verification-content {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.verification-icon {
+  width: 64rpx;
+  height: 64rpx;
+  background: #FFB6C1;
+  border-radius: 8rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-text {
+  font-size: 24rpx;
+  color: #FF6B6B;
+  font-weight: 600;
+}
+
+.verification-text {
+  font-size: 28rpx;
+  color: #666666;
+}
+
+.verify-btn {
+  background: #FF6B6B;
+  color: #FFFFFF;
+  padding: 16rpx 32rpx;
+  border-radius: 24rpx;
+  font-size: 24rpx;
+  border: none;
+}
+
+.promotion-section {
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
+  border-radius: 16rpx;
+  padding: 32rpx;
+}
+
+.promotion-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.promotion-text {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.promotion-title {
+  font-size: 36rpx;
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+.promotion-desc {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.join-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+  padding: 16rpx 32rpx;
+  border-radius: 24rpx;
+  font-size: 24rpx;
+  border: none;
+}
+
+.menu-section {
+  background: #FFFFFF;
+  margin: 32rpx;
+  border-radius: 16rpx;
+  padding: 32rpx;
+}
+
+.menu-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 48rpx;
+}
+
+.menu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16rpx;
+  width: calc(25% - 36rpx);
+  min-width: 120rpx;
+}
+
+.menu-icon {
+  width: 48rpx;
+  height: 48rpx;
+}
+
+.menu-text {
+  font-size: 24rpx;
+  color: #666666;
+  text-align: center;
 }
 </style>
