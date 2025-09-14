@@ -29,8 +29,8 @@
     "vite": "^5.0.0",
     "@rollup/rollup-darwin-arm64": "^4.0.0",
     "@rollup/rollup-darwin-x64": "^4.0.0",
-    "@esbuild/darwin-arm64": "^0.19.0",
-    "@esbuild/darwin-x64": "^0.19.0"
+    "@esbuild/darwin-arm64": "^0.20.2",
+    "@esbuild/darwin-x64": "^0.20.2"
   },
   "browserslist": [
     "Android >= 4.4",
