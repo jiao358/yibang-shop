@@ -13,5 +13,10 @@ export default defineConfig({
   },
   define: {
     __UNI_PLATFORM__: JSON.stringify(process.env.UNI_PLATFORM || 'h5')
+  },
+  resolve: {
+    alias: {
+      '@': './'
+    }
   }
 })
