@@ -39,9 +39,11 @@
         </view>
         <image src="/static/icons/target.png" class="target-icon" mode="aspectFit"></image>
       </view>
+    </view>
 
-      <!-- 余额统计 -->
-      <view class="balance-stats" v-if="isLoggedIn">
+    <!-- 余额统计区域 -->
+    <view class="balance-section" v-if="isLoggedIn">
+      <view class="balance-stats">
         <view class="stat-item">
           <text class="stat-value">¥{{ userInfo.balance || '0.00' }}</text>
           <text class="stat-label">余额</text>
@@ -55,89 +57,78 @@
           <text class="stat-label">邀请奖励</text>
         </view>
       </view>
+    </view>
 
-      <!-- 未登录状态统计 -->
-      <view class="balance-stats" v-else>
-        <view class="stat-item">
-          <text class="stat-value">0</text>
-          <text class="stat-label">积分</text>
+    <!-- 认证区域 -->
+    <view class="verification-section" v-if="isLoggedIn">
+      <view class="verification-content">
+        <view class="verification-icon">
+          <text class="icon-text">认</text>
         </view>
-        <view class="stat-item">
-          <text class="stat-value">0</text>
-          <text class="stat-label">优惠券</text>
-        </view>
-        <view class="stat-item">
-          <text class="stat-value">0</text>
-          <text class="stat-label">收藏</text>
-        </view>
-        <view class="stat-item">
-          <text class="stat-value">0</text>
-          <text class="stat-label">足迹</text>
-        </view>
+        <text class="verification-text">请先完成模特认证</text>
       </view>
+      <button class="verify-btn" @click="goToVerification">
+        立即认证
+      </button>
+    </view>
 
-      <!-- 订单状态区域 -->
-      <view class="order-status-section">
-        <view class="order-item" @click="handleOrderClick('pending-payment')">
-          <image src="/static/icons/pending-payment.svg" class="order-icon" mode="aspectFit"></image>
-          <text class="order-text">待支付</text>
+    <!-- 推广区域 -->
+    <view class="promotion-section" v-if="isLoggedIn">
+      <view class="promotion-content">
+        <view class="promotion-text">
+          <text class="promotion-title">邀联通告</text>
+          <text class="promotion-desc">海量商家等您/种草通告，邀请与您合作</text>
         </view>
-        <view class="order-item" @click="handleOrderClick('pending-shipment')">
-          <image src="/static/icons/pending-shipment.svg" class="order-icon" mode="aspectFit"></image>
-          <text class="order-text">待发货</text>
-        </view>
-        <view class="order-item" @click="handleOrderClick('pending-receipt')">
-          <image src="/static/icons/pending-receipt.svg" class="order-icon" mode="aspectFit"></image>
-          <text class="order-text">待收货</text>
-        </view>
-        <view class="order-item" @click="handleOrderClick('refund')">
-          <image src="/static/icons/refund.svg" class="order-icon" mode="aspectFit"></image>
-          <text class="order-text">退款/售后</text>
-        </view>
-        <view class="order-item" @click="handleOrderClick('my-orders')">
-          <image src="/static/icons/order.svg" class="order-icon" mode="aspectFit"></image>
-          <text class="order-text">我的订单</text>
-        </view>
-      </view>
-
-      <!-- 认证区域 -->
-      <view class="verification-section" v-if="isLoggedIn">
-        <view class="verification-content">
-          <view class="verification-icon">
-            <text class="icon-text">认</text>
-          </view>
-          <text class="verification-text">请先完成模特认证</text>
-        </view>
-        <button class="verify-btn" @click="goToVerification">
-          立即认证
+        <button class="join-btn" @click="goToInvite">
+          立即加入
         </button>
-      </view>
-
-      <!-- 推广区域 -->
-      <view class="promotion-section" v-if="isLoggedIn">
-        <view class="promotion-content">
-          <view class="promotion-text">
-            <text class="promotion-title">邀联通告</text>
-            <text class="promotion-desc">海量商家等您/种草通告，邀请与您合作</text>
-          </view>
-          <button class="join-btn" @click="goToInvite">
-            立即加入
-          </button>
-        </view>
       </view>
     </view>
 
     <!-- 功能菜单 -->
     <view class="menu-section">
       <view class="menu-grid">
-        <view 
-          v-for="(menu, index) in menuItems" 
-          :key="index"
-          class="menu-item"
-          @click="handleMenuClick(menu.action)"
-        >
-          <image :src="menu.icon" class="menu-icon" mode="aspectFit"></image>
-          <text class="menu-text">{{ menu.name }}</text>
+        <!-- 订单状态区域 -->
+        <view class="menu-item" @click="handleOrderClick('pending-payment')">
+          <image src="/static/icons/pending-payment.svg" class="menu-icon" mode="aspectFit"></image>
+          <text class="menu-text">待支付</text>
+        </view>
+        <view class="menu-item" @click="handleOrderClick('pending-shipment')">
+          <image src="/static/icons/pending-shipment.svg" class="menu-icon" mode="aspectFit"></image>
+          <text class="menu-text">待发货</text>
+        </view>
+        <view class="menu-item" @click="handleOrderClick('pending-receipt')">
+          <image src="/static/icons/pending-receipt.svg" class="menu-icon" mode="aspectFit"></image>
+          <text class="menu-text">待收货</text>
+        </view>
+        <view class="menu-item" @click="handleOrderClick('refund')">
+          <image src="/static/icons/refund.svg" class="menu-icon" mode="aspectFit"></image>
+          <text class="menu-text">退款/售后</text>
+        </view>
+        <view class="menu-item" @click="handleOrderClick('my-orders')">
+          <image src="/static/icons/order.svg" class="menu-icon" mode="aspectFit"></image>
+          <text class="menu-text">我的订单</text>
+        </view>
+        <!-- 保留的功能 -->
+        <view class="menu-item" @click="handleMenuClick('address')">
+          <image src="/static/icons/address.svg" class="menu-icon" mode="aspectFit"></image>
+          <text class="menu-text">收货地址</text>
+        </view>
+        <view class="menu-item" @click="handleMenuClick('notification')">
+          <image src="/static/icons/notification.png" class="menu-icon" mode="aspectFit"></image>
+          <text class="menu-text">通知设置</text>
+        </view>
+        <view class="menu-item" @click="handleMenuClick('guide')">
+          <image src="/static/icons/guide.svg" class="menu-icon" mode="aspectFit"></image>
+          <text class="menu-text">新手必读</text>
+        </view>
+        <view class="menu-item" @click="handleMenuClick('service')">
+          <image src="/static/icons/service.svg" class="menu-icon" mode="aspectFit"></image>
+          <text class="menu-text">联系客服</text>
+        </view>
+        <view class="menu-item" @click="handleMenuClick('feedback')">
+          <image src="/static/icons/feedback.svg" class="menu-icon" mode="aspectFit"></image>
+          <text class="menu-text">意见反馈</text>
         </view>
       </view>
     </view>
@@ -560,9 +551,12 @@ export default {
 }
 
 .user-section {
-  background: #FFFFFF;
+  background: linear-gradient(135deg, #FDF2F8 0%, #FCE7F3 100%);
   padding: 40rpx 32rpx;
   margin-bottom: 20rpx;
+  border-radius: 16rpx;
+  margin: 0 32rpx 20rpx;
+  box-shadow: 0 4rpx 12rpx rgba(244, 114, 182, 0.1);
 }
 
 .user-info {
@@ -616,10 +610,17 @@ export default {
   height: 48rpx;
 }
 
+.balance-section {
+  background: #FFFFFF;
+  padding: 32rpx;
+  margin: 0 32rpx 20rpx;
+  border-radius: 16rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
 .balance-stats {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 40rpx;
 }
 
 .stat-item {
@@ -649,7 +650,7 @@ export default {
   padding: 24rpx;
   background: #FFF0F5;
   border-radius: 12rpx;
-  margin-bottom: 20rpx;
+  margin: 0 32rpx 20rpx;
   border: 1rpx solid #FFE0E6;
 }
 
@@ -693,7 +694,7 @@ export default {
   background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
   border-radius: 12rpx;
   padding: 32rpx;
-  margin-bottom: 20rpx;
+  margin: 0 32rpx 20rpx;
   box-shadow: 0 4rpx 12rpx rgba(255, 107, 107, 0.3);
 }
 
@@ -733,7 +734,7 @@ export default {
 
 .menu-section {
   background: #FFFFFF;
-  margin-bottom: 20rpx;
+  margin: 0 32rpx 20rpx;
   border-radius: 12rpx;
   padding: 32rpx;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
@@ -769,34 +770,6 @@ export default {
   white-space: nowrap;
 }
 
-/* 订单状态区域 */
-.order-status-section {
-  display: flex;
-  justify-content: space-around;
-  padding: 32rpx 0;
-  background: #FFFFFF;
-  margin-bottom: 20rpx;
-}
-
-.order-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12rpx;
-  flex: 1;
-}
-
-.order-icon {
-  width: 40rpx;
-  height: 40rpx;
-  opacity: 0.8;
-}
-
-.order-text {
-  font-size: 24rpx;
-  color: #4B5563;
-  text-align: center;
-}
 
 /* 登录弹窗 */
 .login-modal {
