@@ -2,12 +2,12 @@
   <view class="profile-page">
     <!-- 状态栏 -->
     <view class="status-bar">
-      <text class="time">10:15</text>
+      <text class="time">17:29</text>
       <view class="notification-badge">
         <text class="badge-text">10+</text>
       </view>
       <view class="battery">
-        <text class="battery-text">78</text>
+        <text class="battery-text">100</text>
         <view class="battery-bar">
           <view class="battery-fill"></view>
         </view>
@@ -488,9 +488,9 @@ export default {
 
 <style scoped>
 .profile-page {
-  background: linear-gradient(180deg, #F8F9FA 0%, #F1F3F4 100%);
+  background: #F5F5F5;
   min-height: 100vh;
-  padding-bottom: 32rpx;
+  padding: 0;
 }
 
 .status-bar {
@@ -560,39 +560,27 @@ export default {
 }
 
 .user-section {
-  background: linear-gradient(135deg, #FDF2F8 0%, #FCE7F3 100%);
-  padding: 48rpx 32rpx;
-  border-radius: 24rpx;
-  margin: 0 32rpx 32rpx;
-  box-shadow: 0 4rpx 12rpx rgba(244, 114, 182, 0.1);
+  background: #FFFFFF;
+  padding: 40rpx 32rpx;
+  margin-bottom: 20rpx;
 }
 
 .user-info {
   display: flex;
   align-items: center;
-  gap: 32rpx;
-  margin-bottom: 48rpx;
-  padding: 16rpx;
-  border-radius: 16rpx;
-  transition: all 0.2s ease;
-}
-
-.user-info:active {
-  background: rgba(244, 114, 182, 0.1);
-  transform: scale(0.98);
+  gap: 24rpx;
+  margin-bottom: 40rpx;
 }
 
 .user-avatar {
-  width: 128rpx;
-  height: 128rpx;
-  border-radius: 64rpx;
-  background: #F9A8D4;
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50rpx;
+  background: #FFB6C1;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border: 2rpx solid #FFFFFF;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
 }
 
 .avatar-image {
@@ -630,10 +618,8 @@ export default {
 
 .balance-stats {
   display: flex;
-  justify-content: space-around;
-  margin-bottom: 48rpx;
-  padding: 0 32rpx;
-  gap: 16rpx;
+  justify-content: space-between;
+  margin-bottom: 40rpx;
 }
 
 .stat-item {
@@ -641,17 +627,12 @@ export default {
   flex-direction: column;
   align-items: center;
   gap: 8rpx;
-  background: #FFFFFF;
-  padding: 24rpx 16rpx;
-  border-radius: 16rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
   flex: 1;
-  border: 1rpx solid #F0F0F0;
 }
 
 .stat-value {
-  font-size: 40rpx;
-  color: #F472B6;
+  font-size: 36rpx;
+  color: #FF6B6B;
   font-weight: 600;
   margin-bottom: 8rpx;
 }
@@ -665,12 +646,11 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 32rpx;
-  background: linear-gradient(135deg, #FDF2F8 0%, #FCE7F3 100%);
-  border-radius: 20rpx;
-  margin: 0 32rpx 32rpx;
-  border: 2rpx solid #FBCFE8;
-  box-shadow: 0 4rpx 12rpx rgba(244, 114, 182, 0.15);
+  padding: 24rpx;
+  background: #FFF0F5;
+  border-radius: 12rpx;
+  margin-bottom: 20rpx;
+  border: 1rpx solid #FFE0E6;
 }
 
 .verification-content {
@@ -682,7 +662,7 @@ export default {
 .verification-icon {
   width: 64rpx;
   height: 64rpx;
-  background: #FBCFE8;
+  background: #FFB6C1;
   border-radius: 8rpx;
   display: flex;
   align-items: center;
@@ -691,7 +671,7 @@ export default {
 
 .icon-text {
   font-size: 24rpx;
-  color: #F472B6;
+  color: #FF6B6B;
   font-weight: 600;
 }
 
@@ -701,7 +681,7 @@ export default {
 }
 
 .verify-btn {
-  background: #F472B6;
+  background: #FF6B6B;
   color: #FFFFFF;
   padding: 16rpx 32rpx;
   border-radius: 24rpx;
@@ -710,12 +690,11 @@ export default {
 }
 
 .promotion-section {
-  background: linear-gradient(135deg, #F472B6 0%, #EC4899 100%);
-  border-radius: 20rpx;
-  padding: 40rpx 32rpx;
-  margin: 0 32rpx 32rpx;
-  box-shadow: 0 6rpx 16rpx rgba(244, 114, 182, 0.4);
-  border: 2rpx solid #F472B6;
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
+  border-radius: 12rpx;
+  padding: 32rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 4rpx 12rpx rgba(255, 107, 107, 0.3);
 }
 
 .promotion-content {
@@ -754,41 +733,31 @@ export default {
 
 .menu-section {
   background: #FFFFFF;
-  margin: 0 32rpx 32rpx;
-  border-radius: 20rpx;
-  padding: 40rpx 32rpx;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
-  border: 1rpx solid #F0F0F0;
+  margin-bottom: 20rpx;
+  border-radius: 12rpx;
+  padding: 32rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
 }
 
 .menu-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 48rpx;
-  row-gap: 48rpx;
+  gap: 32rpx;
+  row-gap: 32rpx;
 }
 
 .menu-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16rpx;
+  gap: 12rpx;
   min-width: 120rpx;
-  padding: 16rpx;
-  border-radius: 12rpx;
-  transition: all 0.2s ease;
-}
-
-.menu-item:active {
-  background: #F8F9FA;
-  transform: scale(0.95);
 }
 
 .menu-icon {
-  width: 48rpx;
-  height: 48rpx;
+  width: 40rpx;
+  height: 40rpx;
   opacity: 0.8;
-  margin-bottom: 16rpx;
 }
 
 .menu-text {
@@ -804,32 +773,22 @@ export default {
 .order-status-section {
   display: flex;
   justify-content: space-around;
-  padding: 32rpx;
+  padding: 32rpx 0;
   background: #FFFFFF;
-  border-radius: 16rpx;
-  margin: 0 32rpx 32rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
-  border: 1rpx solid #F0F0F0;
+  margin-bottom: 20rpx;
 }
 
 .order-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16rpx;
+  gap: 12rpx;
   flex: 1;
-  padding: 16rpx 8rpx;
-  border-radius: 12rpx;
-  transition: background-color 0.2s ease;
-}
-
-.order-item:active {
-  background: #F8F9FA;
 }
 
 .order-icon {
-  width: 48rpx;
-  height: 48rpx;
+  width: 40rpx;
+  height: 40rpx;
   opacity: 0.8;
 }
 
