@@ -488,8 +488,9 @@ export default {
 
 <style scoped>
 .profile-page {
-  background: #F5F5F5;
+  background: linear-gradient(180deg, #F8F9FA 0%, #F1F3F4 100%);
   min-height: 100vh;
+  padding-bottom: 32rpx;
 }
 
 .status-bar {
@@ -559,8 +560,11 @@ export default {
 }
 
 .user-section {
-  background: #FFFFFF;
+  background: linear-gradient(135deg, #FDF2F8 0%, #FCE7F3 100%);
   padding: 48rpx 32rpx;
+  border-radius: 24rpx;
+  margin: 0 32rpx 32rpx;
+  box-shadow: 0 4rpx 12rpx rgba(244, 114, 182, 0.1);
 }
 
 .user-info {
@@ -568,6 +572,14 @@ export default {
   align-items: center;
   gap: 32rpx;
   margin-bottom: 48rpx;
+  padding: 16rpx;
+  border-radius: 16rpx;
+  transition: all 0.2s ease;
+}
+
+.user-info:active {
+  background: rgba(244, 114, 182, 0.1);
+  transform: scale(0.98);
 }
 
 .user-avatar {
@@ -621,6 +633,7 @@ export default {
   justify-content: space-around;
   margin-bottom: 48rpx;
   padding: 0 32rpx;
+  gap: 16rpx;
 }
 
 .stat-item {
@@ -628,6 +641,12 @@ export default {
   flex-direction: column;
   align-items: center;
   gap: 8rpx;
+  background: #FFFFFF;
+  padding: 24rpx 16rpx;
+  border-radius: 16rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+  flex: 1;
+  border: 1rpx solid #F0F0F0;
 }
 
 .stat-value {
@@ -646,11 +665,12 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24rpx;
-  background: #FDF2F8;
-  border-radius: 16rpx;
-  margin-bottom: 32rpx;
-  border: 1rpx solid #FCE7F3;
+  padding: 32rpx;
+  background: linear-gradient(135deg, #FDF2F8 0%, #FCE7F3 100%);
+  border-radius: 20rpx;
+  margin: 0 32rpx 32rpx;
+  border: 2rpx solid #FBCFE8;
+  box-shadow: 0 4rpx 12rpx rgba(244, 114, 182, 0.15);
 }
 
 .verification-content {
@@ -691,9 +711,11 @@ export default {
 
 .promotion-section {
   background: linear-gradient(135deg, #F472B6 0%, #EC4899 100%);
-  border-radius: 16rpx;
-  padding: 32rpx;
-  box-shadow: 0 4rpx 12rpx rgba(244, 114, 182, 0.3);
+  border-radius: 20rpx;
+  padding: 40rpx 32rpx;
+  margin: 0 32rpx 32rpx;
+  box-shadow: 0 6rpx 16rpx rgba(244, 114, 182, 0.4);
+  border: 2rpx solid #F472B6;
 }
 
 .promotion-content {
@@ -732,10 +754,11 @@ export default {
 
 .menu-section {
   background: #FFFFFF;
-  margin: 32rpx 32rpx 0 32rpx;
-  border-radius: 16rpx;
-  padding: 32rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+  margin: 0 32rpx 32rpx;
+  border-radius: 20rpx;
+  padding: 40rpx 32rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+  border: 1rpx solid #F0F0F0;
 }
 
 .menu-grid {
@@ -751,6 +774,14 @@ export default {
   align-items: center;
   gap: 16rpx;
   min-width: 120rpx;
+  padding: 16rpx;
+  border-radius: 12rpx;
+  transition: all 0.2s ease;
+}
+
+.menu-item:active {
+  background: #F8F9FA;
+  transform: scale(0.95);
 }
 
 .menu-icon {
@@ -773,10 +804,12 @@ export default {
 .order-status-section {
   display: flex;
   justify-content: space-around;
-  padding: 32rpx 0;
-  border-top: 1rpx solid #F0F0F0;
-  border-bottom: 1rpx solid #F0F0F0;
-  margin: 32rpx 0;
+  padding: 32rpx;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  margin: 0 32rpx 32rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+  border: 1rpx solid #F0F0F0;
 }
 
 .order-item {
@@ -785,6 +818,13 @@ export default {
   align-items: center;
   gap: 16rpx;
   flex: 1;
+  padding: 16rpx 8rpx;
+  border-radius: 12rpx;
+  transition: background-color 0.2s ease;
+}
+
+.order-item:active {
+  background: #F8F9FA;
 }
 
 .order-icon {
