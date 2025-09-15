@@ -2,9 +2,12 @@
   <view class="profile-page">
     <!-- 状态栏 -->
     <view class="status-bar">
-      <text class="time">17:29</text>
+      <text class="time">10:15</text>
+      <view class="notification-badge">
+        <text class="badge-text">10+</text>
+      </view>
       <view class="battery">
-        <text class="battery-text">100</text>
+        <text class="battery-text">78</text>
         <view class="battery-bar">
           <view class="battery-fill"></view>
         </view>
@@ -21,24 +24,24 @@
 
     <!-- 用户信息区域 -->
     <view class="user-section">
-      <view class="user-info">
+      <view class="user-info" @click="handleUserClick">
         <view class="user-avatar">
           <image 
-            :src="userInfo.avatar || '/static/images/default-avatar.png'"
+            :src="isLoggedIn ? (userInfo.avatar || '/static/images/default-avatar.png') : '/static/images/default-avatar.png'"
             class="avatar-image"
             mode="aspectFill"
           ></image>
         </view>
         <view class="user-details">
-          <text class="username">{{ userInfo.nickname || '微信用户' }}</text>
-          <text class="user-id">ID：{{ userInfo.id || '3585076' }}</text>
-          <text class="user-desc">{{ userInfo.desc || '暂无简介' }}</text>
+          <text class="username">{{ isLoggedIn ? (userInfo.nickname || '微信用户') : '注册/登录' }}</text>
+          <text class="user-id" v-if="isLoggedIn">ID：{{ userInfo.id || '3585076' }}</text>
+          <text class="user-desc" v-if="isLoggedIn">{{ userInfo.desc || '暂无简介' }}</text>
         </view>
         <image src="/static/icons/target.png" class="target-icon" mode="aspectFit"></image>
       </view>
 
       <!-- 余额统计 -->
-      <view class="balance-stats">
+      <view class="balance-stats" v-if="isLoggedIn">
         <view class="stat-item">
           <text class="stat-value">¥{{ userInfo.balance || '0.00' }}</text>
           <text class="stat-label">余额</text>
@@ -53,8 +56,52 @@
         </view>
       </view>
 
+      <!-- 未登录状态统计 -->
+      <view class="balance-stats" v-else>
+        <view class="stat-item">
+          <text class="stat-value">0</text>
+          <text class="stat-label">积分</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-value">0</text>
+          <text class="stat-label">优惠券</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-value">0</text>
+          <text class="stat-label">收藏</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-value">0</text>
+          <text class="stat-label">足迹</text>
+        </view>
+      </view>
+
+      <!-- 订单状态区域 -->
+      <view class="order-status-section">
+        <view class="order-item" @click="handleOrderClick('pending-payment')">
+          <image src="/static/icons/pending-payment.svg" class="order-icon" mode="aspectFit"></image>
+          <text class="order-text">待支付</text>
+        </view>
+        <view class="order-item" @click="handleOrderClick('pending-shipment')">
+          <image src="/static/icons/pending-shipment.svg" class="order-icon" mode="aspectFit"></image>
+          <text class="order-text">待发货</text>
+        </view>
+        <view class="order-item" @click="handleOrderClick('pending-receipt')">
+          <image src="/static/icons/pending-receipt.svg" class="order-icon" mode="aspectFit"></image>
+          <text class="order-text">待收货</text>
+        </view>
+        <view class="order-item" @click="handleOrderClick('refund')">
+          <image src="/static/icons/refund.svg" class="order-icon" mode="aspectFit"></image>
+          <text class="order-text">退款/售后</text>
+        </view>
+        <view class="order-item" @click="handleOrderClick('my-orders')">
+          <image src="/static/icons/order.svg" class="order-icon" mode="aspectFit"></image>
+          <text class="order-text">我的订单</text>
+        </view>
+      </view>
+
       <!-- 认证区域 -->
-      <view class="verification-section">
+      <view class="verification-section" v-if="isLoggedIn">
         <view class="verification-content">
           <view class="verification-icon">
             <text class="icon-text">认</text>
@@ -67,7 +114,7 @@
       </view>
 
       <!-- 推广区域 -->
-      <view class="promotion-section">
+      <view class="promotion-section" v-if="isLoggedIn">
         <view class="promotion-content">
           <view class="promotion-text">
             <text class="promotion-title">邀联通告</text>
@@ -94,6 +141,49 @@
         </view>
       </view>
     </view>
+
+    <!-- 登录弹窗 -->
+    <view class="login-modal" v-if="showLoginModal" @click="closeLoginModal">
+      <view class="login-content" @click.stop>
+        <!-- Logo区域 -->
+        <view class="logo-section">
+          <view class="logo">
+            <text class="logo-text">易捷商城</text>
+          </view>
+          <text class="welcome-title">Hi! 欢迎登录易捷商城</text>
+          <text class="welcome-desc">登录后可享受易捷商城完整服务体验</text>
+        </view>
+
+        <!-- 登录按钮 -->
+        <view class="login-buttons">
+          <button class="login-btn primary" @click="handleWechatLogin">
+            手机验证码登录
+          </button>
+          <view class="or-divider">
+            <text class="or-text">or</text>
+          </view>
+          <button class="login-btn secondary" @click="handleQuickLogin">
+            手机快捷登录
+          </button>
+        </view>
+
+        <!-- 底部区域 -->
+        <view class="login-footer">
+          <text class="skip-login" @click="skipLogin">暂不登录</text>
+          <view class="agreement-section">
+            <checkbox 
+              :checked="agreedToTerms" 
+              @change="toggleAgreement"
+              class="agreement-checkbox"
+            />
+            <text class="agreement-text">
+              我已阅读并同意
+              <text class="agreement-link" @click="showTerms">《服务政策及用户隐私协议》</text>
+            </text>
+          </view>
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -105,6 +195,11 @@ export default {
   name: 'ProfilePage',
   setup() {
     const userStore = useUserStore()
+    
+    // 登录状态
+    const isLoggedIn = ref(false)
+    const showLoginModal = ref(false)
+    const agreedToTerms = ref(false)
     
     // 用户信息
     const userInfo = ref({
@@ -131,17 +226,17 @@ export default {
       },
       {
         name: '意见反馈',
-        icon: '/static/icons/feedback.png',
+        icon: '/static/icons/feedback.svg',
         action: 'feedback'
       },
       {
         name: '浏览记录',
-        icon: '/static/icons/history.png',
+        icon: '/static/icons/history.svg',
         action: 'history'
       },
       {
         name: '收货地址',
-        icon: '/static/icons/address.png',
+        icon: '/static/icons/address.svg',
         action: 'address'
       },
       {
@@ -151,12 +246,12 @@ export default {
       },
       {
         name: '新手必读',
-        icon: '/static/icons/guide.png',
+        icon: '/static/icons/guide.svg',
         action: 'guide'
       },
       {
         name: '联系客服',
-        icon: '/static/icons/service.png',
+        icon: '/static/icons/service.svg',
         action: 'service'
       }
     ])
@@ -176,6 +271,11 @@ export default {
     
     // 处理菜单点击
     const handleMenuClick = (action) => {
+      if (!isLoggedIn.value) {
+        showLoginModal.value = true
+        return
+      }
+      
       switch (action) {
         case 'album':
           uni.navigateTo({
@@ -239,14 +339,146 @@ export default {
       })
     }
     
+    // 处理用户点击
+    const handleUserClick = () => {
+      if (!isLoggedIn.value) {
+        showLoginModal.value = true
+      }
+    }
+    
+    // 处理订单点击
+    const handleOrderClick = (type) => {
+      if (!isLoggedIn.value) {
+        showLoginModal.value = true
+        return
+      }
+      
+      // 根据类型跳转到对应页面
+      switch (type) {
+        case 'pending-payment':
+          uni.navigateTo({
+            url: '/pages/order/order?status=pending-payment'
+          })
+          break
+        case 'pending-shipment':
+          uni.navigateTo({
+            url: '/pages/order/order?status=pending-shipment'
+          })
+          break
+        case 'pending-receipt':
+          uni.navigateTo({
+            url: '/pages/order/order?status=pending-receipt'
+          })
+          break
+        case 'refund':
+          uni.navigateTo({
+            url: '/pages/order/order?status=refund'
+          })
+          break
+        case 'my-orders':
+          uni.navigateTo({
+            url: '/pages/order/order'
+          })
+          break
+      }
+    }
+    
+    // 关闭登录弹窗
+    const closeLoginModal = () => {
+      showLoginModal.value = false
+    }
+    
+    // 微信登录
+    const handleWechatLogin = async () => {
+      if (!agreedToTerms.value) {
+        uni.showToast({
+          title: '请先同意服务政策及用户隐私协议',
+          icon: 'none'
+        })
+        return
+      }
+      
+      try {
+        // 调用微信登录
+        const loginRes = await uni.login({
+          provider: 'weixin'
+        })
+        
+        if (loginRes.code) {
+          // 获取用户信息
+          const userRes = await uni.getUserProfile({
+            desc: '用于完善用户资料'
+          })
+          
+          // 更新用户信息
+          userInfo.value = {
+            ...userInfo.value,
+            nickname: userRes.userInfo.nickName,
+            avatar: userRes.userInfo.avatarUrl
+          }
+          
+          // 设置登录状态
+          isLoggedIn.value = true
+          showLoginModal.value = false
+          
+          uni.showToast({
+            title: '登录成功',
+            icon: 'success'
+          })
+        }
+      } catch (error) {
+        console.error('微信登录失败:', error)
+        uni.showToast({
+          title: '登录失败，请重试',
+          icon: 'none'
+        })
+      }
+    }
+    
+    // 快捷登录
+    const handleQuickLogin = () => {
+      uni.showToast({
+        title: '快捷登录功能开发中',
+        icon: 'none'
+      })
+    }
+    
+    // 跳过登录
+    const skipLogin = () => {
+      showLoginModal.value = false
+    }
+    
+    // 切换协议同意状态
+    const toggleAgreement = (e) => {
+      agreedToTerms.value = e.detail.value
+    }
+    
+    // 显示服务条款
+    const showTerms = () => {
+      uni.navigateTo({
+        url: '/pages/terms/terms'
+      })
+    }
+    
     onMounted(() => {
       loadUserInfo()
     })
     
     return {
+      isLoggedIn,
+      showLoginModal,
+      agreedToTerms,
       userInfo,
       menuItems,
       handleMenuClick,
+      handleUserClick,
+      handleOrderClick,
+      closeLoginModal,
+      handleWechatLogin,
+      handleQuickLogin,
+      skipLogin,
+      toggleAgreement,
+      showTerms,
       goToVerification,
       goToInvite
     }
@@ -268,6 +500,23 @@ export default {
   background: #FFFFFF;
   font-size: 24rpx;
   color: #666666;
+}
+
+.notification-badge {
+  width: 32rpx;
+  height: 32rpx;
+  background: #FF6B6B;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16rpx;
+}
+
+.badge-text {
+  font-size: 20rpx;
+  color: #FFFFFF;
+  font-weight: 600;
 }
 
 .battery {
@@ -325,11 +574,13 @@ export default {
   width: 128rpx;
   height: 128rpx;
   border-radius: 64rpx;
-  background: #FFB6C1;
+  background: #F9A8D4;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  border: 2rpx solid #FFFFFF;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
 }
 
 .avatar-image {
@@ -352,12 +603,12 @@ export default {
 
 .user-id {
   font-size: 24rpx;
-  color: #999999;
+  color: #6B7280;
 }
 
 .user-desc {
   font-size: 24rpx;
-  color: #CCCCCC;
+  color: #9CA3AF;
 }
 
 .target-icon {
@@ -381,13 +632,14 @@ export default {
 
 .stat-value {
   font-size: 40rpx;
-  color: #FF6B6B;
+  color: #F472B6;
   font-weight: 600;
+  margin-bottom: 8rpx;
 }
 
 .stat-label {
   font-size: 24rpx;
-  color: #999999;
+  color: #6B7280;
 }
 
 .verification-section {
@@ -395,9 +647,10 @@ export default {
   align-items: center;
   justify-content: space-between;
   padding: 24rpx;
-  background: #FFF0F5;
+  background: #FDF2F8;
   border-radius: 16rpx;
   margin-bottom: 32rpx;
+  border: 1rpx solid #FCE7F3;
 }
 
 .verification-content {
@@ -409,7 +662,7 @@ export default {
 .verification-icon {
   width: 64rpx;
   height: 64rpx;
-  background: #FFB6C1;
+  background: #FBCFE8;
   border-radius: 8rpx;
   display: flex;
   align-items: center;
@@ -418,17 +671,17 @@ export default {
 
 .icon-text {
   font-size: 24rpx;
-  color: #FF6B6B;
+  color: #F472B6;
   font-weight: 600;
 }
 
 .verification-text {
   font-size: 28rpx;
-  color: #666666;
+  color: #374151;
 }
 
 .verify-btn {
-  background: #FF6B6B;
+  background: #F472B6;
   color: #FFFFFF;
   padding: 16rpx 32rpx;
   border-radius: 24rpx;
@@ -437,9 +690,10 @@ export default {
 }
 
 .promotion-section {
-  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
+  background: linear-gradient(135deg, #F472B6 0%, #EC4899 100%);
   border-radius: 16rpx;
   padding: 32rpx;
+  box-shadow: 0 4rpx 12rpx rgba(244, 114, 182, 0.3);
 }
 
 .promotion-content {
@@ -458,11 +712,13 @@ export default {
   font-size: 36rpx;
   color: #FFFFFF;
   font-weight: 600;
+  margin-bottom: 8rpx;
 }
 
 .promotion-desc {
   font-size: 24rpx;
   color: rgba(255, 255, 255, 0.9);
+  opacity: 0.9;
 }
 
 .join-btn {
@@ -476,15 +732,17 @@ export default {
 
 .menu-section {
   background: #FFFFFF;
-  margin: 32rpx;
+  margin: 32rpx 32rpx 0 32rpx;
   border-radius: 16rpx;
   padding: 32rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
 }
 
 .menu-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 48rpx;
+  row-gap: 48rpx;
 }
 
 .menu-item {
@@ -492,18 +750,187 @@ export default {
   flex-direction: column;
   align-items: center;
   gap: 16rpx;
-  width: calc(25% - 36rpx);
   min-width: 120rpx;
 }
 
 .menu-icon {
   width: 48rpx;
   height: 48rpx;
+  opacity: 0.8;
+  margin-bottom: 16rpx;
 }
 
 .menu-text {
   font-size: 24rpx;
-  color: #666666;
+  color: #4B5563;
   text-align: center;
+  line-height: 1.2;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+/* 订单状态区域 */
+.order-status-section {
+  display: flex;
+  justify-content: space-around;
+  padding: 32rpx 0;
+  border-top: 1rpx solid #F0F0F0;
+  border-bottom: 1rpx solid #F0F0F0;
+  margin: 32rpx 0;
+}
+
+.order-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16rpx;
+  flex: 1;
+}
+
+.order-icon {
+  width: 48rpx;
+  height: 48rpx;
+  opacity: 0.8;
+}
+
+.order-text {
+  font-size: 24rpx;
+  color: #4B5563;
+  text-align: center;
+}
+
+/* 登录弹窗 */
+.login-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: flex-end;
+  z-index: 1000;
+}
+
+.login-content {
+  background: #FFFFFF;
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 48rpx 32rpx 32rpx;
+  width: 100%;
+  max-height: 80vh;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.logo-section {
+  text-align: center;
+  margin-bottom: 48rpx;
+}
+
+.logo {
+  width: 120rpx;
+  height: 120rpx;
+  background: linear-gradient(135deg, #4CAF50 0%, #FFC107 100%);
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24rpx;
+}
+
+.logo-text {
+  font-size: 32rpx;
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+.welcome-title {
+  font-size: 48rpx;
+  color: #000000;
+  font-weight: 600;
+  margin-bottom: 16rpx;
+  display: block;
+}
+
+.welcome-desc {
+  font-size: 28rpx;
+  color: #666666;
+  display: block;
+}
+
+.login-buttons {
+  margin-bottom: 48rpx;
+}
+
+.login-btn {
+  width: 100%;
+  height: 88rpx;
+  border-radius: 16rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  border: none;
+  margin-bottom: 24rpx;
+}
+
+.login-btn.primary {
+  background: #2E7D32;
+  color: #FFFFFF;
+}
+
+.login-btn.secondary {
+  background: #E8F5E8;
+  color: #2E7D32;
+}
+
+.or-divider {
+  text-align: center;
+  margin: 24rpx 0;
+}
+
+.or-text {
+  font-size: 24rpx;
+  color: #999999;
+}
+
+.login-footer {
+  text-align: center;
+}
+
+.skip-login {
+  font-size: 28rpx;
+  color: #666666;
+  margin-bottom: 32rpx;
+  display: block;
+}
+
+.agreement-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 16rpx;
+  text-align: left;
+}
+
+.agreement-checkbox {
+  margin-top: 4rpx;
+}
+
+.agreement-text {
+  font-size: 24rpx;
+  color: #666666;
+  line-height: 1.4;
+  flex: 1;
+}
+
+.agreement-link {
+  color: #2E7D32;
+  text-decoration: underline;
 }
 </style>
