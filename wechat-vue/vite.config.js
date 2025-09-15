@@ -18,5 +18,7 @@ export default defineConfig({
     alias: {
       '@': './'
     }
-  }
+  },
+  root: '.',
+  publicDir: 'static'
 })
