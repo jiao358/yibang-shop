@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/mall")
+@RequestMapping("/mall")
 @RequiredArgsConstructor
 @Tag(name = "商城管理", description = "商城相关接口")
 public class MallController {
@@ -51,7 +51,7 @@ public class MallController {
         // 2. 根据条件筛选商品
         // 3. 分页返回结果
         
-        return Result.success("获取商品列表成功");
+        return Result.success();
     }
 
     /**
@@ -69,7 +69,7 @@ public class MallController {
         // 2. 获取商品规格、库存等信息
         // 3. 返回商品详情
         
-        return Result.success("获取商品详情成功");
+        return Result.success();
     }
 
     /**
@@ -85,7 +85,7 @@ public class MallController {
         // 2. 构建分类树结构
         // 3. 返回分类列表
         
-        return Result.success("获取商品分类成功");
+        return Result.success();
     }
 
     /**
@@ -102,7 +102,7 @@ public class MallController {
         // 3. 调用ERP系统创建订单
         // 4. 返回订单信息
         
-        return Result.success("创建订单成功");
+        return Result.success();
     }
 
     /**
@@ -122,7 +122,7 @@ public class MallController {
         // 2. 调用ERP系统接口获取订单数据
         // 3. 分页返回结果
         
-        return Result.success("获取订单列表成功");
+        return Result.success();
     }
 
     /**
@@ -140,7 +140,7 @@ public class MallController {
         // 2. 调用ERP系统接口获取订单详情
         // 3. 返回订单详情
         
-        return Result.success("获取订单详情成功");
+        return Result.success();
     }
 
     /**
@@ -157,7 +157,7 @@ public class MallController {
         // 3. 更新订单支付状态
         // 4. 返回支付结果
         
-        return Result.success("支付处理成功");
+        return Result.success();
     }
 
     /**
@@ -176,7 +176,7 @@ public class MallController {
         // 3. 处理退款逻辑
         // 4. 返回取消结果
         
-        return Result.success("取消订单成功");
+        return Result.success();
     }
 
     /**
@@ -195,6 +195,6 @@ public class MallController {
         // 3. 更新订单状态
         // 4. 返回确认结果
         
-        return Result.success("确认收货成功");
+        return Result.success();
     }
 }

@@ -37,4 +37,9 @@ public class WechatLoginRequest {
      * 用户头像
      */
     private String avatar;
+    
+    /**
+     * 手机号授权码
+     */
+    private String phoneCode;
 }

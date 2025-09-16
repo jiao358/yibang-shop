@@ -52,15 +52,14 @@ public class SecurityConfig {
             )
             // 配置授权规则
             .authorizeHttpRequests(auth -> auth
-                // 公开接口
                 .requestMatchers(
+                    "/auth/**",
                     "/api/auth/**",
                     "/api/public/**",
                     "/actuator/**",
                     "/error",
                     "/favicon.ico"
                 ).permitAll()
-                // 其他请求需要认证
                 .anyRequest().authenticated()
             )
             // 添加JWT过滤器

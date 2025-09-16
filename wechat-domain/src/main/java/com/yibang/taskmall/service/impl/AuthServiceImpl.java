@@ -5,6 +5,7 @@ import com.yibang.taskmall.dto.request.RefreshTokenRequest;
 import com.yibang.taskmall.dto.response.LoginResponse;
 import com.yibang.taskmall.dto.response.TokenResponse;
 import com.yibang.taskmall.service.AuthService;
+import com.yibang.taskmall.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
+    private final JwtTokenProvider jwtTokenProvider;
+
     @Override
     public LoginResponse wechatLogin(WechatLoginRequest request) {
         log.info("处理微信登录请求: {}", request);
@@ -31,7 +34,8 @@ public class AuthServiceImpl implements AuthService {
         // 4. 返回登录结果
         
         LoginResponse response = new LoginResponse();
-        response.setAccessToken("mock-access-token");
+        // 生成真实的JWT
+        response.setAccessToken(jwtTokenProvider.generateToken(1L, "mock-openid"));
         response.setRefreshToken("mock-refresh-token");
         response.setExpiresIn(86400L);
         response.setUserId(1L);
@@ -79,5 +83,11 @@ public class AuthServiceImpl implements AuthService {
         // 2. 清除用户会话信息
         
         return true;
+    }
+    
+    @Override
+    public String generateToken(Long userId, String openid) {
+        log.info("生成JWT令牌: userId={}, openid={}", userId, openid);
+        return jwtTokenProvider.generateToken(userId, openid);
     }
 }

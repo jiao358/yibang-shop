@@ -1,24 +1,5 @@
 <template>
   <view class="order-page">
-    <!-- 状态栏 -->
-    <view class="status-bar">
-      <text class="time">17:29</text>
-      <view class="battery">
-        <text class="battery-text">100</text>
-        <view class="battery-bar">
-          <view class="battery-fill"></view>
-        </view>
-      </view>
-    </view>
-
-    <!-- 头部 -->
-    <view class="header">
-      <text class="title">我的订单</text>
-      <view class="header-actions">
-        <image src="/static/icons/search.png" class="action-icon" mode="aspectFit"></image>
-        <image src="/static/icons/more.png" class="action-icon" mode="aspectFit"></image>
-      </view>
-    </view>
 
     <!-- 订单状态标签 -->
     <view class="order-tabs">
@@ -30,7 +11,7 @@
         @click="switchTab(index)"
       >
         <text class="tab-text">{{ tab.name }}</text>
-        <view v-if="tab.count > 0" class="tab-badge">{{ tab.count }}</view>
+        <view v-if="tab.count > 0" class="tab-badge">{{ displayCount(tab.count) }}</view>
       </view>
     </view>
 
@@ -83,21 +64,21 @@
               <button 
                 v-if="order.status === 'pending'"
                 class="action-btn cancel"
-                @click.stop="cancelOrder(order.id)"
+                @click.stop="onCancel(order.id)"
               >
                 取消订单
               </button>
               <button 
                 v-if="order.status === 'pending'"
                 class="action-btn pay"
-                @click.stop="payOrder(order.id)"
+                @click.stop="onPay(order.id)"
               >
                 立即支付
               </button>
               <button 
                 v-if="order.status === 'paid'"
                 class="action-btn confirm"
-                @click.stop="confirmOrder(order.id)"
+                @click.stop="onConfirm(order.id)"
               >
                 确认收货
               </button>
@@ -118,15 +99,21 @@
 
 <script>
 import { ref, computed, onMounted } from 'vue'
+import { onShow } from '@dcloudio/uni-app'
 import { useOrderStore } from '@/stores/order'
+import { useUserStore } from '@/stores/user'
 
 export default {
   name: 'OrderPage',
   setup() {
     const orderStore = useOrderStore()
+    const userStore = useUserStore()
     
     // 当前选中的标签
     const currentTab = ref(0)
+    
+    // 登录状态
+    const isLoggedIn = ref(false)
     
     // 订单标签
     const orderTabs = ref([
@@ -137,48 +124,15 @@ export default {
       { name: '已完成', count: 0 }
     ])
     
-    // 模拟订单数据
-    const orders = ref([
-      {
-        id: 1,
-        orderNo: 'YB202501140001',
-        createTime: '2025-01-14 17:30',
-        status: 'pending',
-        productName: '苹果iPhone 15 Pro',
-        productSpec: '深空黑色 256GB',
-        productImage: '/static/images/iphone15.jpg',
-        price: 8999,
-        quantity: 1,
-        totalAmount: 8999
-      },
-      {
-        id: 2,
-        orderNo: 'YB202501140002',
-        createTime: '2025-01-14 16:45',
-        status: 'paid',
-        productName: '小米13 Ultra',
-        productSpec: '陶瓷黑 512GB',
-        productImage: '/static/images/mi13.jpg',
-        price: 5999,
-        quantity: 1,
-        totalAmount: 5999
-      },
-      {
-        id: 3,
-        orderNo: 'YB202501140003',
-        createTime: '2025-01-14 15:20',
-        status: 'completed',
-        productName: '华为Mate 60 Pro',
-        productSpec: '雅川青 256GB',
-        productImage: '/static/images/mate60.jpg',
-        price: 6999,
-        quantity: 1,
-        totalAmount: 6999
-      }
-    ])
+    // 订单数据
+    const orders = ref([])
     
     // 当前显示的订单
     const currentOrders = computed(() => {
+      if (!isLoggedIn.value) {
+        return [] // 未登录时不显示任何订单
+      }
+      
       if (currentTab.value === 0) {
         return orders.value
       }
@@ -187,9 +141,19 @@ export default {
       return orders.value.filter(order => order.status === status)
     })
     
+    // 数字显示自适应（避免过长覆盖）
+    const displayCount = (n) => {
+      if (n > 999) return '999+'
+      if (n > 99) return '99+'
+      return String(n)
+    }
+    
     // 切换标签
-    const switchTab = (index) => {
+    const switchTab = async (index) => {
       currentTab.value = index
+      if (isLoggedIn.value) {
+        await loadOrderList()
+      }
     }
     
     // 获取订单状态文本
@@ -210,45 +174,45 @@ export default {
         url: `/pages/order-detail/order-detail?id=${orderId}`
       })
     }
-    
-    // 取消订单
-    const cancelOrder = (orderId) => {
+
+    // 实际调用后端取消/支付/确认接口
+    const onCancel = (orderId) => {
       uni.showModal({
         title: '确认取消',
         content: '确定要取消这个订单吗？',
-        success: (res) => {
+        success: async (res) => {
           if (res.confirm) {
-            // 调用取消订单API
-            console.log('取消订单:', orderId)
-            uni.showToast({
-              title: '订单已取消',
-              icon: 'success'
-            })
+            try {
+              await orderStore.cancelOrder(orderId)
+              await loadOrderList()
+              uni.showToast({ title: '订单已取消', icon: 'success' })
+            } catch (e) {}
           }
         }
       })
     }
-    
-    // 支付订单
-    const payOrder = (orderId) => {
-      uni.navigateTo({
-        url: `/pages/pay/pay?orderId=${orderId}`
-      })
+
+    const onPay = async (orderId) => {
+      try {
+        await orderStore.payOrder(orderId, { channel: 'wxpay' })
+        await loadOrderList()
+        uni.showToast({ title: '支付成功', icon: 'success' })
+      } catch (e) {
+        uni.showToast({ title: '支付失败', icon: 'none' })
+      }
     }
-    
-    // 确认收货
-    const confirmOrder = (orderId) => {
+
+    const onConfirm = (orderId) => {
       uni.showModal({
         title: '确认收货',
         content: '确定已收到商品吗？',
-        success: (res) => {
+        success: async (res) => {
           if (res.confirm) {
-            // 调用确认收货API
-            console.log('确认收货:', orderId)
-            uni.showToast({
-              title: '确认收货成功',
-              icon: 'success'
-            })
+            try {
+              await orderStore.confirmOrder(orderId)
+              await loadOrderList()
+              uni.showToast({ title: '确认收货成功', icon: 'success' })
+            } catch (e) {}
           }
         }
       })
@@ -256,21 +220,35 @@ export default {
     
     // 评价订单
     const reviewOrder = (orderId) => {
-      uni.navigateTo({
-        url: `/pages/review/review?orderId=${orderId}`
-      })
+      uni.navigateTo({ url: `/pages/review/review?orderId=${orderId}` })
     }
     
-    // 加载订单数据
-    const loadOrders = async () => {
+    // 检查登录状态并按当前tab加载（仅一次精准请求）
+    const checkLoginAndLoad = async () => {
+      userStore.checkLoginStatus()
+      const token = uni.getStorageSync('token')
+      if (!token) {
+        isLoggedIn.value = false
+        orders.value = []
+        return
+      }
+      isLoggedIn.value = true
+      await loadOrderList()  // 仅按当前tab状态请求一次
+    }
+    
+    // 根据当前tab加载订单列表
+    const loadOrderList = async () => {
+      if (!isLoggedIn.value) return
+      
       try {
-        await orderStore.getUserOrders()
-        // 更新订单数据
+        const statusMap = ['', 'pending', 'paid', 'shipped', 'completed']
+        const status = statusMap[currentTab.value]
+        const params = status === '' ? {} : { status }
+        await orderStore.getUserOrders(params)
         orders.value = orderStore.orders
-        // 更新标签计数
         updateTabCounts()
       } catch (error) {
-        console.error('加载订单失败:', error)
+        console.error('加载订单列表失败:', error)
       }
     }
     
@@ -283,8 +261,30 @@ export default {
       orderTabs.value[4].count = orders.value.filter(o => o.status === 'completed').length
     }
     
-    onMounted(() => {
-      loadOrders()
+    onMounted(async () => {
+      const pages = getCurrentPages()
+      const currentPage = pages[pages.length - 1]
+      if (currentPage.options && currentPage.options.tab) {
+        const tabIndex = parseInt(currentPage.options.tab)
+        if (tabIndex >= 0 && tabIndex < orderTabs.value.length) {
+          currentTab.value = tabIndex
+        }
+      }
+      await checkLoginAndLoad()
+    })
+    
+    onShow(async () => {
+      const savedTab = uni.getStorageSync('orderTab')
+      if (savedTab !== undefined && savedTab !== null) {
+        const tabIndex = parseInt(savedTab)
+        if (tabIndex >= 0 && tabIndex < orderTabs.value.length) {
+          currentTab.value = tabIndex
+        }
+        uni.removeStorageSync('orderTab')
+        await checkLoginAndLoad()
+      } else {
+        await checkLoginAndLoad()
+      }
     })
     
     return {
@@ -294,10 +294,11 @@ export default {
       switchTab,
       getOrderStatusText,
       goToOrderDetail,
-      cancelOrder,
-      payOrder,
-      confirmOrder,
-      reviewOrder
+      onCancel,
+      onPay,
+      onConfirm,
+      reviewOrder,
+      displayCount
     }
   }
 }
@@ -309,62 +310,6 @@ export default {
   min-height: 100vh;
 }
 
-.status-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8rpx 32rpx;
-  background: #FFFFFF;
-  font-size: 24rpx;
-  color: #666666;
-}
-
-.battery {
-  display: flex;
-  align-items: center;
-  gap: 8rpx;
-}
-
-.battery-bar {
-  width: 32rpx;
-  height: 16rpx;
-  border: 1rpx solid #999999;
-  border-radius: 4rpx;
-  overflow: hidden;
-}
-
-.battery-fill {
-  width: 100%;
-  height: 100%;
-  background: #4CAF50;
-  border-radius: 2rpx;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 24rpx 32rpx;
-  background: #FFFFFF;
-  border-bottom: 1rpx solid #F0F0F0;
-}
-
-.title {
-  font-size: 36rpx;
-  font-weight: 600;
-  color: #333333;
-}
-
-.header-actions {
-  display: flex;
-  gap: 24rpx;
-}
-
-.action-icon {
-  width: 40rpx;
-  height: 40rpx;
-}
-
 .order-tabs {
   display: flex;
   background: #FFFFFF;
@@ -374,9 +319,9 @@ export default {
 .tab-item {
   flex: 1;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  padding: 24rpx 0;
+  justify-content: center;
+  padding: 20rpx 48rpx 20rpx 16rpx; /* 为右侧徽标预留空间 */
   position: relative;
 }
 
@@ -388,216 +333,57 @@ export default {
 .tab-text {
   font-size: 28rpx;
   color: #666666;
-  margin-bottom: 8rpx;
 }
 
 .tab-badge {
   position: absolute;
-  top: 16rpx;
-  right: 50%;
-  transform: translateX(50%);
+  top: 6rpx;
+  right: 12rpx; /* 靠右放置，避免覆盖文本 */
   background: #FF6B6B;
   color: #FFFFFF;
   font-size: 20rpx;
-  padding: 4rpx 8rpx;
+  padding: 4rpx 8rpx; /* 自适应宽度 */
   border-radius: 12rpx;
   min-width: 24rpx;
   text-align: center;
 }
 
-.order-list {
-  padding: 24rpx 32rpx;
-}
+.order-list { padding: 24rpx 32rpx; }
 
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 120rpx 0;
-}
+.empty-state { display: flex; flex-direction: column; align-items: center; padding: 120rpx 0; }
+.empty-image { width: 200rpx; height: 200rpx; margin-bottom: 32rpx; }
+.empty-text { font-size: 32rpx; color: #999999; margin-bottom: 16rpx; }
+.empty-desc { font-size: 24rpx; color: #CCCCCC; }
 
-.empty-image {
-  width: 200rpx;
-  height: 200rpx;
-  margin-bottom: 32rpx;
-}
+.order-item { background: #FFFFFF; border-radius: 16rpx; margin-bottom: 24rpx; padding: 32rpx; box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1); }
+.order-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24rpx; padding-bottom: 24rpx; border-bottom: 1rpx solid #F0F0F0; }
+.order-info { display: flex; flex-direction: column; gap: 8rpx; }
+.order-number { font-size: 28rpx; color: #333333; font-weight: 500; }
+.order-time { font-size: 24rpx; color: #999999; }
+.order-status { padding: 8rpx 16rpx; border-radius: 12rpx; font-size: 24rpx; }
+.order-status.pending { background: #FFF3CD; color: #FFC107; }
+.order-status.paid { background: #D1ECF1; color: #17A2B8; }
+.order-status.shipped { background: #D4EDDA; color: #28A745; }
+.order-status.completed { background: #E8F5E8; color: #28A745; }
 
-.empty-text {
-  font-size: 32rpx;
-  color: #999999;
-  margin-bottom: 16rpx;
-}
+.product-info { display: flex; gap: 24rpx; margin-bottom: 24rpx; }
+.product-image { width: 120rpx; height: 120rpx; border-radius: 12rpx; background: #F5F5F5; }
+.product-details { flex: 1; display: flex; flex-direction: column; gap: 8rpx; }
+.product-name { font-size: 28rpx; color: #333333; font-weight: 500; line-height: 1.4; }
+.product-spec { font-size: 24rpx; color: #999999; }
+.product-price { display: flex; justify-content: space-between; align-items: center; margin-top: 8rpx; }
+.price { font-size: 32rpx; color: #FF6B6B; font-weight: 600; }
+.quantity { font-size: 24rpx; color: #999999; }
 
-.empty-desc {
-  font-size: 24rpx;
-  color: #CCCCCC;
-}
+.order-actions { display: flex; justify-content: space-between; align-items: center; padding-top: 24rpx; border-top: 1rpx solid #F0F0F0; }
+.total-info { display: flex; align-items: center; gap: 8rpx; }
+.total-label { font-size: 24rpx; color: #666666; }
+.total-price { font-size: 32rpx; color: #FF6B6B; font-weight: 600; }
 
-.order-item {
-  background: #FFFFFF;
-  border-radius: 16rpx;
-  margin-bottom: 24rpx;
-  padding: 32rpx;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
-}
-
-.order-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24rpx;
-  padding-bottom: 24rpx;
-  border-bottom: 1rpx solid #F0F0F0;
-}
-
-.order-info {
-  display: flex;
-  flex-direction: column;
-  gap: 8rpx;
-}
-
-.order-number {
-  font-size: 28rpx;
-  color: #333333;
-  font-weight: 500;
-}
-
-.order-time {
-  font-size: 24rpx;
-  color: #999999;
-}
-
-.order-status {
-  padding: 8rpx 16rpx;
-  border-radius: 12rpx;
-  font-size: 24rpx;
-}
-
-.order-status.pending {
-  background: #FFF3CD;
-  color: #FFC107;
-}
-
-.order-status.paid {
-  background: #D1ECF1;
-  color: #17A2B8;
-}
-
-.order-status.shipped {
-  background: #D4EDDA;
-  color: #28A745;
-}
-
-.order-status.completed {
-  background: #E8F5E8;
-  color: #28A745;
-}
-
-.product-info {
-  display: flex;
-  gap: 24rpx;
-  margin-bottom: 24rpx;
-}
-
-.product-image {
-  width: 120rpx;
-  height: 120rpx;
-  border-radius: 12rpx;
-  background: #F5F5F5;
-}
-
-.product-details {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 8rpx;
-}
-
-.product-name {
-  font-size: 28rpx;
-  color: #333333;
-  font-weight: 500;
-  line-height: 1.4;
-}
-
-.product-spec {
-  font-size: 24rpx;
-  color: #999999;
-}
-
-.product-price {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 8rpx;
-}
-
-.price {
-  font-size: 32rpx;
-  color: #FF6B6B;
-  font-weight: 600;
-}
-
-.quantity {
-  font-size: 24rpx;
-  color: #999999;
-}
-
-.order-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 24rpx;
-  border-top: 1rpx solid #F0F0F0;
-}
-
-.total-info {
-  display: flex;
-  align-items: center;
-  gap: 8rpx;
-}
-
-.total-label {
-  font-size: 24rpx;
-  color: #666666;
-}
-
-.total-price {
-  font-size: 32rpx;
-  color: #FF6B6B;
-  font-weight: 600;
-}
-
-.action-buttons {
-  display: flex;
-  gap: 16rpx;
-}
-
-.action-btn {
-  padding: 16rpx 32rpx;
-  border-radius: 24rpx;
-  font-size: 24rpx;
-  border: none;
-  min-width: 120rpx;
-}
-
-.action-btn.cancel {
-  background: #F5F5F5;
-  color: #666666;
-}
-
-.action-btn.pay {
-  background: #FF6B6B;
-  color: #FFFFFF;
-}
-
-.action-btn.confirm {
-  background: #4CAF50;
-  color: #FFFFFF;
-}
-
-.action-btn.review {
-  background: #2196F3;
-  color: #FFFFFF;
-}
+.action-buttons { display: flex; gap: 16rpx; }
+.action-btn { padding: 16rpx 32rpx; border-radius: 24rpx; font-size: 24rpx; border: none; min-width: 120rpx; }
+.action-btn.cancel { background: #F5F5F5; color: #666666; }
+.action-btn.pay { background: #FF6B6B; color: #FFFFFF; }
+.action-btn.confirm { background: #4CAF50; color: #FFFFFF; }
+.action-btn.review { background: #2196F3; color: #FFFFFF; }
 </style>

@@ -44,4 +44,13 @@ public interface AuthService {
      * @return 退出结果
      */
     Boolean logout(Long userId);
+    
+    /**
+     * 生成JWT令牌
+     * 
+     * @param userId 用户ID
+     * @param openid 微信openid
+     * @return JWT令牌
+     */
+    String generateToken(Long userId, String openid);
 }

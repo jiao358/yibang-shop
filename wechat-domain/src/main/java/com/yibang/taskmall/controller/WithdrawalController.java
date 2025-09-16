@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/withdrawals")
+@RequestMapping("/withdrawals")
 @RequiredArgsConstructor
 @Tag(name = "提现管理", description = "提现相关接口")
 public class WithdrawalController {
@@ -33,17 +34,27 @@ public class WithdrawalController {
      */
     @PostMapping("/apply")
     @Operation(summary = "申请提现", description = "用户申请提现到微信")
-    public Result<Void> applyWithdrawal(@Validated @RequestBody WithdrawalRequest request) {
+    public Result<Long> applyWithdrawal(@Validated @RequestBody WithdrawalRequest request) {
         log.info("申请提现请求: {}", request);
         
-        // TODO: 实现申请提现逻辑
-        // 1. 验证提现金额和用户余额
-        // 2. 检查提现限制和手续费
-        // 3. 创建提现记录
-        // 4. 调用微信支付API
-        // 5. 返回申请结果
-        
-        return Result.success("提现申请成功");
+        try {
+            // 从JWT获取当前用户ID
+            Long currentUserId = getCurrentUserId();
+            request.setUserId(currentUserId);
+            
+            // 申请提现
+            Boolean result = withdrawalService.applyWithdrawal(request);
+            
+            if (result) {
+                return Result.success(request.getUserId());
+            } else {
+                return Result.error("提现申请失败");
+            }
+            
+        } catch (Exception e) {
+            log.error("申请提现失败", e);
+            return Result.error("申请提现失败: " + e.getMessage());
+        }
     }
 
     /**
@@ -63,7 +74,7 @@ public class WithdrawalController {
         // 2. 根据状态筛选提现记录
         // 3. 分页返回结果
         
-        return Result.success("获取提现记录成功");
+        return Result.success();
     }
 
     /**
@@ -81,7 +92,7 @@ public class WithdrawalController {
         // 2. 查询提现详情
         // 3. 返回提现信息
         
-        return Result.success("获取提现详情成功");
+        return Result.success();
     }
 
     /**
@@ -99,7 +110,7 @@ public class WithdrawalController {
         // 2. 更新提现状态为已取消
         // 3. 退还提现金额到用户余额
         
-        return Result.success("取消提现成功");
+        return Result.success();
     }
 
     /**
@@ -110,12 +121,14 @@ public class WithdrawalController {
     public Result<Object> getWithdrawalConfig() {
         log.info("获取提现配置请求");
         
-        // TODO: 实现获取提现配置逻辑
-        // 1. 从JWT Token获取用户等级
-        // 2. 查询用户等级对应的提现配置
-        // 3. 返回提现配置信息
-        
-        return Result.success("获取提现配置成功");
+        try {
+            Long currentUserId = getCurrentUserId();
+            Object config = withdrawalService.getWithdrawalConfig(currentUserId);
+            return Result.success(config);
+        } catch (Exception e) {
+            log.error("获取提现配置失败", e);
+            return Result.error("获取提现配置失败: " + e.getMessage());
+        }
     }
 
     /**
@@ -124,15 +137,30 @@ public class WithdrawalController {
     @PostMapping("/calculate-fee")
     @Operation(summary = "计算提现手续费", description = "计算指定金额的提现手续费")
     public Result<Object> calculateWithdrawalFee(
-            @Parameter(description = "提现金额") @RequestParam Integer amount) {
+            @Parameter(description = "提现金额（分）") @RequestParam Integer amount) {
         
         log.info("计算提现手续费请求: amount={}", amount);
         
-        // TODO: 实现计算提现手续费逻辑
-        // 1. 从JWT Token获取用户等级
-        // 2. 根据用户等级和提现金额计算手续费
-        // 3. 返回手续费计算结果
-        
-        return Result.success("计算提现手续费成功");
+        try {
+            Long currentUserId = getCurrentUserId();
+            Object feeResult = withdrawalService.calculateWithdrawalFee(currentUserId, amount);
+            return Result.success(feeResult);
+        } catch (Exception e) {
+            log.error("计算提现手续费失败", e);
+            return Result.error("计算提现手续费失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 获取当前用户ID
+     */
+    private Long getCurrentUserId() {
+        try {
+            String userIdStr = SecurityContextHolder.getContext().getAuthentication().getName();
+            return Long.parseLong(userIdStr);
+        } catch (Exception e) {
+            log.error("获取当前用户ID失败", e);
+            throw new RuntimeException("用户未登录");
+        }
     }
 }

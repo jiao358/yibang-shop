@@ -4,40 +4,50 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.yibang.taskmall.entity.Task;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
 /**
- * 任务Mapper接口
- * 
- * @author yibang
- * @since 2024-01-15
+ * 任务Mapper
  */
 @Mapper
 public interface TaskMapper extends BaseMapper<Task> {
-
+    
     /**
-     * 根据用户等级获取可用任务列表
-     * 
-     * @param userLevel 用户等级
-     * @param status 任务状态
-     * @return 任务列表
+     * 根据用户等级和任务状态查询可用任务
      */
-    List<Task> selectAvailableTasksByUserLevel(@Param("userLevel") String userLevel, @Param("status") String status);
-
+    @Select("SELECT * FROM tasks WHERE status = 'active' " +
+            "AND (user_level = #{userLevel} OR user_level = 'all') " +
+            "AND (expire_time IS NULL OR expire_time > NOW()) " +
+            "AND (max_claim_count = -1 OR current_claim_count < max_claim_count) " +
+            "ORDER BY reward_amount DESC, created_at DESC " +
+            "LIMIT #{offset}, #{limit}")
+    List<Task> findAvailableTasksForUser(@Param("userLevel") String userLevel, 
+                                        @Param("offset") int offset, 
+                                        @Param("limit") int limit);
+    
     /**
-     * 更新任务领取次数
-     * 
-     * @param taskId 任务ID
-     * @return 影响行数
+     * 根据任务类型和佣金等级查询任务
      */
-    int updateClaimCount(@Param("taskId") Long taskId);
-
+    @Select("SELECT * FROM tasks WHERE status = 'active' " +
+            "AND (#{taskType} IS NULL OR type = #{taskType}) " +
+            "AND (#{rewardLevel} IS NULL OR reward_level = #{rewardLevel}) " +
+            "AND (expire_time IS NULL OR expire_time > NOW()) " +
+            "ORDER BY reward_amount DESC, created_at DESC " +
+            "LIMIT #{offset}, #{limit}")
+    List<Task> findTasksByTypeAndRewardLevel(@Param("taskType") String taskType,
+                                           @Param("rewardLevel") String rewardLevel,
+                                           @Param("offset") int offset,
+                                           @Param("limit") int limit);
+    
     /**
-     * 检查任务是否可领取
-     * 
-     * @param taskId 任务ID
-     * @return 任务信息
+     * 统计任务总数
      */
-    Task selectTaskForClaim(@Param("taskId") Long taskId);
+    @Select("SELECT COUNT(*) FROM tasks WHERE status = 'active' " +
+            "AND (#{taskType} IS NULL OR type = #{taskType}) " +
+            "AND (#{rewardLevel} IS NULL OR reward_level = #{rewardLevel}) " +
+            "AND (expire_time IS NULL OR expire_time > NOW())")
+    Long countTasksByTypeAndRewardLevel(@Param("taskType") String taskType,
+                                       @Param("rewardLevel") String rewardLevel);
 }

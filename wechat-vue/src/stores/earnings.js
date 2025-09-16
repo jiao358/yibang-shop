@@ -11,17 +11,26 @@ export const useEarningsStore = defineStore('earnings', () => {
   const loading = ref(false)
 
   // 计算属性
-  const totalEarnings = computed(() => userEarnings.value.totalEarnings || 0)
+  const totalEarnings = computed(() => userEarnings.value.totalIncome || 0)
   const availableBalance = computed(() => userEarnings.value.balance || 0)
-  const frozenAmount = computed(() => userEarnings.value.frozenAmount || 0)
+  const frozenAmount = computed(() => userEarnings.value.frozenBalance || 0)
   const todayEarnings = computed(() => userEarnings.value.todayEarnings || 0)
 
   // 方法
-  const getUserEarnings = async () => {
+  const getUserEarnings = async (params = {}) => {
     try {
-      const response = await earningsApi.getUserEarnings()
-      userEarnings.value = response.earnings
-      return response
+      const res = await earningsApi.getUserEarnings(params)
+      // 对齐钱包汇总结构
+      const data = res.data || {}
+      userEarnings.value = {
+        balance: data.balance || 0,
+        frozenBalance: data.frozenBalance || 0,
+        totalIncome: data.totalIncome || 0,
+        totalWithdrawal: data.totalWithdrawal || 0,
+        netChange: data.netChange || 0,
+        todayEarnings: data.todayIncome || 0
+      }
+      return res
     } catch (error) {
       console.error('获取用户收益失败:', error)
       throw error
@@ -63,10 +72,7 @@ export const useEarningsStore = defineStore('earnings', () => {
   const applyWithdrawal = async (data) => {
     try {
       const response = await earningsApi.applyWithdrawal(data)
-      
-      // 更新用户收益
       await getUserEarnings()
-      
       return response
     } catch (error) {
       console.error('申请提现失败:', error)
@@ -132,20 +138,15 @@ export const useEarningsStore = defineStore('earnings', () => {
   }
 
   return {
-    // 状态
     userEarnings,
     earningsList,
     withdrawals,
     total,
     loading,
-    
-    // 计算属性
     totalEarnings,
     availableBalance,
     frozenAmount,
     todayEarnings,
-    
-    // 方法
     getUserEarnings,
     getEarningsList,
     getWithdrawals,

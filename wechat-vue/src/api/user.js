@@ -2,13 +2,18 @@ import { get, post, put } from './request'
 
 export const userApi = {
   // 微信登录
-  login(code) {
-    return post('/api/user/login', { code })
+  login(code, userInfo = {}, phoneCode = null) {
+    return post('/api/auth/wechat-login', { 
+      code,
+      nickname: userInfo.nickName || userInfo.nickname,
+      avatar: userInfo.avatarUrl || userInfo.avatar,
+      phoneCode: phoneCode
+    })
   },
 
-  // 获取用户信息
+  // 获取用户信息（对齐后端接口）
   getUserInfo() {
-    return get('/api/user/info')
+    return get('/api/auth/user-info')
   },
 
   // 更新用户信息

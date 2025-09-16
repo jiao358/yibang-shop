@@ -1,26 +1,5 @@
 <template>
   <view class="address-page">
-    <!-- 状态栏 -->
-    <view class="status-bar">
-      <text class="time">17:29</text>
-      <view class="battery">
-        <text class="battery-text">100</text>
-        <view class="battery-bar">
-          <view class="battery-fill"></view>
-        </view>
-      </view>
-    </view>
-
-    <!-- 头部 -->
-    <view class="header">
-      <view class="header-left" @click="goBack">
-        <image src="/static/icons/arrow-left.svg" class="back-icon" mode="aspectFit"></image>
-      </view>
-      <text class="header-title">收货地址</text>
-      <view class="header-right" @click="addAddress">
-        <text class="add-text">新增</text>
-      </view>
-    </view>
 
     <!-- 地址列表 -->
     <view class="address-list">
@@ -135,14 +114,15 @@
       v-if="showRegionPicker" 
       mode="region" 
       @change="onRegionChange"
-      @cancel="showRegionPicker = false"
+      @cancel="closeRegionPicker"
+      :value="regionValue"
     >
     </picker>
   </view>
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useAddressStore } from '@/stores/address'
 
 export default {
@@ -155,6 +135,7 @@ export default {
     const showAddressForm = ref(false)
     const isEdit = ref(false)
     const showRegionPicker = ref(false)
+    const regionValue = ref([])
     const formData = ref({
       id: null,
       name: '',
@@ -268,7 +249,12 @@ export default {
       showRegionPicker.value = true
     }
     
-    // 地区选择
+    // 关闭地区选择器
+    const closeRegionPicker = () => {
+      showRegionPicker.value = false
+    }
+    
+    // 地区选择变化
     const onRegionChange = (e) => {
       const region = e.detail.value
       formData.value.region = region.join(' ')
@@ -369,6 +355,7 @@ export default {
       showAddressForm,
       isEdit,
       showRegionPicker,
+      regionValue,
       formData,
       goBack,
       addAddress,
@@ -377,6 +364,7 @@ export default {
       selectAddress,
       deleteAddress,
       openRegionPicker,
+      closeRegionPicker,
       onRegionChange,
       toggleDefault,
       saveAddress
@@ -391,71 +379,6 @@ export default {
   min-height: 100vh;
 }
 
-.status-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8rpx 32rpx;
-  background: #FFFFFF;
-  font-size: 24rpx;
-  color: #666666;
-}
-
-.battery {
-  display: flex;
-  align-items: center;
-  gap: 8rpx;
-}
-
-.battery-bar {
-  width: 32rpx;
-  height: 16rpx;
-  border: 1rpx solid #999999;
-  border-radius: 4rpx;
-  overflow: hidden;
-}
-
-.battery-fill {
-  width: 100%;
-  height: 100%;
-  background: #4CAF50;
-  border-radius: 2rpx;
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 24rpx 32rpx;
-  background: #FFFFFF;
-  border-bottom: 1rpx solid #F0F0F0;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-}
-
-.back-icon {
-  width: 40rpx;
-  height: 40rpx;
-}
-
-.header-title {
-  font-size: 36rpx;
-  font-weight: 600;
-  color: #333333;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-}
-
-.add-text {
-  font-size: 28rpx;
-  color: #FF6B6B;
-}
 
 .address-list {
   padding: 24rpx 32rpx;
@@ -748,4 +671,5 @@ export default {
   font-size: 28rpx;
   border: none;
 }
+
 </style>

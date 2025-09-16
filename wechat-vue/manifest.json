@@ -1,6 +1,6 @@
 {
     "name" : "yibang-taskmall-miniprogram",
-    "appid" : "__UNI__YIBANG_TASKMALL",
+    "appid" : "__UNI__ABCB1D1",
     "description" : "懿邦任务商城微信小程序",
     "versionName" : "1.0.0",
     "versionCode" : "100",
@@ -47,44 +47,9 @@
             "urlCheck" : false
         },
         "usingComponents" : true,
-        "permission" : {
-            "scope.userInfo" : {
-                "desc" : "用于完善用户资料"
-            }
-        },
+        "lazyCodeLoading": "requiredComponents",
         "requiredBackgroundModes" : [ "audio" ],
-        "tabBar" : {
-            "color" : "#999999",
-            "selectedColor" : "#FF6B6B",
-            "backgroundColor" : "#FFFFFF",
-            "borderStyle" : "black",
-            "list" : [
-                {
-                    "pagePath" : "pages/index/index",
-                    "text" : "首页",
-                    "iconPath" : "static/icons/home.png",
-                    "selectedIconPath" : "static/icons/home-active.png"
-                },
-                {
-                    "pagePath" : "pages/task/task",
-                    "text" : "任务",
-                    "iconPath" : "static/icons/task.png",
-                    "selectedIconPath" : "static/icons/task-active.png"
-                },
-                {
-                    "pagePath" : "pages/mall/mall",
-                    "text" : "商城",
-                    "iconPath" : "static/icons/mall.png",
-                    "selectedIconPath" : "static/icons/mall-active.png"
-                },
-                {
-                    "pagePath" : "pages/earnings/earnings",
-                    "text" : "收益",
-                    "iconPath" : "static/icons/earnings.png",
-                    "selectedIconPath" : "static/icons/earnings-active.png"
-                }
-            ]
-        },
+
         "window" : {
             "navigationBarBackgroundColor" : "#FF6B6B",
             "navigationBarTitleText" : "任务商城",

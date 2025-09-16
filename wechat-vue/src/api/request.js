@@ -1,36 +1,51 @@
 // 请求配置和拦截器
-const BASE_URL = 'https://api.yibang-taskmall.com' // 替换为实际的后端地址
+const BASE_URL = process.env.NODE_ENV === 'development' 
+  ? 'http://127.0.0.1:8080' // 开发环境使用本地服务器（更稳妥的本地地址）
+  : 'https://api.yibang-taskmall.com' // 生产环境使用实际的后端地址
 
 // 请求拦截器
 const request = (options) => {
   return new Promise((resolve, reject) => {
-    // 添加token
+    // 添加token（登录与鉴权接口不带Authorization）
+    const isAuthEndpoint = typeof options.url === 'string' && 
+      (options.url.indexOf('/auth/') >= 0 || options.url.indexOf('/api/auth/') >= 0)
     const token = uni.getStorageSync('token')
-    if (token) {
+    
+    console.log('Request URL:', options.url)
+    console.log('Is auth endpoint:', isAuthEndpoint)
+    console.log('Token exists:', !!token)
+    console.log('Token value:', token ? token.substring(0, 20) + '...' : 'null')
+    
+    if (token && !isAuthEndpoint) {
       options.header = {
         ...options.header,
         'Authorization': `Bearer ${token}`
       }
+      console.log('Added Authorization header with token length:', token.length)
+    } else {
+      console.log('No Authorization header added. Token:', !!token, 'IsAuth:', isAuthEndpoint)
     }
 
-    // 添加默认配置
+    // 添加默认配置（确保最终 url 不会被 options.url 覆盖）
     const config = {
-      url: BASE_URL + options.url,
       method: options.method || 'GET',
       data: options.data || {},
+      timeout: 10000,
+      ...options,
       header: {
         'Content-Type': 'application/json',
         ...options.header
       },
-      timeout: 10000,
-      ...options
+      url: BASE_URL + options.url
     }
+    
+    console.log('Final config header:', config.header)
 
     uni.request({
       ...config,
       success: (res) => {
         if (res.statusCode === 200) {
-          if (res.data.code === 0) {
+          if (res.data.code === 200) {
             resolve(res.data)
           } else {
             // 业务错误
@@ -41,19 +56,13 @@ const request = (options) => {
             reject(new Error(res.data.message || '请求失败'))
           }
         } else if (res.statusCode === 401) {
-          // 未授权，清除token并跳转登录
+          // 未授权，清除token并提示（不跳转不存在的登录页）
           uni.removeStorageSync('token')
           uni.removeStorageSync('userInfo')
           uni.showToast({
             title: '登录已过期',
             icon: 'none'
           })
-          // 跳转到登录页面
-          setTimeout(() => {
-            uni.reLaunch({
-              url: '/pages/login/login'
-            })
-          }, 1500)
           reject(new Error('登录已过期'))
         } else {
           // 其他HTTP错误

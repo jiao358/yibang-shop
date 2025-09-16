@@ -1,77 +1,19 @@
 {
   "pages": [
-    {
-      "path": "pages/index/index",
-      "style": {
-        "navigationBarTitleText": "首页"
-      }
-    },
-    {
-      "path": "pages/task/task",
-      "style": {
-        "navigationBarTitleText": "任务中心"
-      }
-    },
-    {
-      "path": "pages/mall/mall",
-      "style": {
-        "navigationBarTitleText": "商品分组"
-      }
-    },
-    {
-      "path": "pages/earnings/earnings",
-      "style": {
-        "navigationBarTitleText": "收益"
-      }
-    },
-    {
-      "path": "pages/profile/profile",
-      "style": {
-        "navigationBarTitleText": "个人中心"
-      }
-    },
-    {
-      "path": "pages/task-detail/task-detail",
-      "style": {
-        "navigationBarTitleText": "任务详情"
-      }
-    },
-    {
-      "path": "pages/product-detail/product-detail",
-      "style": {
-        "navigationBarTitleText": "商品详情"
-      }
-    },
-    {
-      "path": "pages/order/order",
-      "style": {
-        "navigationBarTitleText": "订单"
-      }
-    },
-    {
-      "path": "pages/withdraw/withdraw",
-      "style": {
-        "navigationBarTitleText": "提现"
-      }
-    },
-    {
-      "path": "pages/address/address",
-      "style": {
-        "navigationBarTitleText": "收货地址"
-      }
-    },
-    {
-      "path": "pages/address-list/address-list",
-      "style": {
-        "navigationBarTitleText": "地址列表"
-      }
-    },
-    {
-      "path": "pages/order-submit/order-submit",
-      "style": {
-        "navigationBarTitleText": "确认订单"
-      }
-    }
+    { "path": "pages/index/index", "style": { "navigationBarTitleText": "首页" } },
+    { "path": "pages/task/task", "style": { "navigationBarTitleText": "任务中心" } },
+    { "path": "pages/mall/mall", "style": { "navigationBarTitleText": "商品分组" } },
+    { "path": "pages/earnings/earnings", "style": { "navigationBarTitleText": "收益" } },
+    { "path": "pages/profile/profile", "style": { "navigationBarTitleText": "个人中心" } },
+    { "path": "pages/task-detail/task-detail", "style": { "navigationBarTitleText": "任务详情" } },
+    { "path": "pages/task/task-details", "style": { "navigationBarTitleText": "任务明细" } },
+    { "path": "pages/product-detail/product-detail", "style": { "navigationBarTitleText": "商品详情" } },
+    { "path": "pages/order/order", "style": { "navigationBarTitleText": "订单" } },
+    { "path": "pages/withdraw/withdraw", "style": { "navigationBarTitleText": "提现" } },
+    { "path": "pages/address/address", "style": { "navigationBarTitleText": "收货地址" } },
+    { "path": "pages/address-list/address-list", "style": { "navigationBarTitleText": "地址列表" } },
+    { "path": "pages/order-submit/order-submit", "style": { "navigationBarTitleText": "确认订单" } },
+    { "path": "pages/wallet/transactions", "style": { "navigationBarTitleText": "钱包明细" } }
   ],
   "globalStyle": {
     "navigationBarTextStyle": "white",
@@ -85,37 +27,14 @@
     "backgroundColor": "#FFFFFF",
     "borderStyle": "black",
     "list": [
-      {
-        "pagePath": "pages/index/index",
-        "text": "首页",
-        "iconPath": "static/icons/home.svg",
-        "selectedIconPath": "static/icons/home-active.svg"
-      },
-      {
-        "pagePath": "pages/mall/mall",
-        "text": "商品分组",
-        "iconPath": "static/icons/mall.svg",
-        "selectedIconPath": "static/icons/mall-active.svg"
-      },
-      {
-        "pagePath": "pages/task/task",
-        "text": "任务",
-        "iconPath": "static/icons/task.svg",
-        "selectedIconPath": "static/icons/task-active.svg"
-      },
-      {
-        "pagePath": "pages/order/order",
-        "text": "订单",
-        "iconPath": "static/icons/order.svg",
-        "selectedIconPath": "static/icons/order-active.svg"
-      },
-      {
-        "pagePath": "pages/profile/profile",
-        "text": "我的",
-        "iconPath": "static/icons/profile.svg",
-        "selectedIconPath": "static/icons/profile-active.svg"
-      }
+      { "pagePath": "pages/index/index", "text": "首页", "iconPath": "static/icons/home.png", "selectedIconPath": "static/icons/home-active.png" },
+      { "pagePath": "pages/mall/mall", "text": "商品分组", "iconPath": "static/icons/mall.png", "selectedIconPath": "static/icons/mall-active.png" },
+      { "pagePath": "pages/task/task", "text": "任务", "iconPath": "static/icons/task.png", "selectedIconPath": "static/icons/task-active.png" },
+      { "pagePath": "pages/order/order", "text": "订单", "iconPath": "static/icons/order.png", "selectedIconPath": "static/icons/order-active.png" },
+      { "pagePath": "pages/profile/profile", "text": "我的", "iconPath": "static/icons/profile.png", "selectedIconPath": "static/icons/profile-active.png" }
     ]
   },
   "uniIdRouter": {}
 }
+
+

@@ -14,7 +14,7 @@
     <!-- 头部 -->
     <view class="header">
       <view class="header-left" @click="goBack">
-        <image src="/static/icons/arrow-left.svg" class="back-icon" mode="aspectFit"></image>
+        <image src="/static/icons/order.png" class="back-icon" mode="aspectFit"></image>
       </view>
       <text class="header-title">确认订单</text>
       <view class="header-right"></view>
@@ -23,9 +23,9 @@
     <!-- 收货地址 -->
     <view class="address-section" @click="selectAddress">
       <view class="address-header">
-        <image src="/static/icons/location.svg" class="location-icon" mode="aspectFit"></image>
+        <image src="/static/icons/home.png" class="location-icon" mode="aspectFit"></image>
         <text class="address-title">收货地址</text>
-        <image src="/static/icons/arrow-right.svg" class="arrow-icon" mode="aspectFit"></image>
+        <image src="/static/icons/arrow-right.png" class="arrow-icon" mode="aspectFit"></image>
       </view>
       <view v-if="selectedAddress" class="address-content">
         <view class="address-info">
@@ -80,7 +80,7 @@
             <text class="price-text">¥{{ option.price }}</text>
           </view>
           <view class="radio-btn" :class="{ checked: selectedDelivery === option.id }">
-            <image v-if="selectedDelivery === option.id" src="/static/icons/check.svg" class="check-icon" mode="aspectFit"></image>
+            <image v-if="selectedDelivery === option.id" src="/static/icons/check.png" class="check-icon" mode="aspectFit"></image>
           </view>
         </view>
       </view>
@@ -89,12 +89,12 @@
     <!-- 优惠券 -->
     <view class="coupon-section" @click="selectCoupon">
       <view class="coupon-header">
-        <image src="/static/icons/coupon.svg" class="coupon-icon" mode="aspectFit"></image>
+        <image src="/static/icons/mall.png" class="coupon-icon" mode="aspectFit"></image>
         <text class="coupon-title">优惠券</text>
         <view class="coupon-info">
           <text v-if="selectedCoupon" class="coupon-name">{{ selectedCoupon.name }}</text>
           <text v-else class="coupon-placeholder">选择优惠券</text>
-          <image src="/static/icons/arrow-right.svg" class="arrow-icon" mode="aspectFit"></image>
+          <image src="/static/icons/arrow-right.png" class="arrow-icon" mode="aspectFit"></image>
         </view>
       </view>
     </view>
@@ -155,7 +155,7 @@
         <view class="modal-header">
           <text class="modal-title">选择收货地址</text>
           <view class="close-btn" @click="closeAddressPicker">
-            <image src="/static/icons/close.svg" class="close-icon" mode="aspectFit"></image>
+            <image src="/static/icons/settings.png" class="close-icon" mode="aspectFit"></image>
           </view>
         </view>
         <view class="address-list">
@@ -175,7 +175,7 @@
               <text class="address-detail">{{ address.fullAddress }}</text>
             </view>
             <view class="radio-btn" :class="{ checked: selectedAddress && selectedAddress.id === address.id }">
-              <image v-if="selectedAddress && selectedAddress.id === address.id" src="/static/icons/check.svg" class="check-icon" mode="aspectFit"></image>
+              <image v-if="selectedAddress && selectedAddress.id === address.id" src="/static/icons/check.png" class="check-icon" mode="aspectFit"></image>
             </view>
           </view>
         </view>
@@ -192,7 +192,7 @@
         <view class="modal-header">
           <text class="modal-title">选择优惠券</text>
           <view class="close-btn" @click="closeCouponPicker">
-            <image src="/static/icons/close.svg" class="close-icon" mode="aspectFit"></image>
+            <image src="/static/icons/settings.png" class="close-icon" mode="aspectFit"></image>
           </view>
         </view>
         <view class="coupon-list">
@@ -214,7 +214,7 @@
               </view>
             </view>
             <view class="radio-btn" :class="{ checked: selectedCoupon && selectedCoupon.id === coupon.id }">
-              <image v-if="selectedCoupon && selectedCoupon.id === coupon.id" src="/static/icons/check.svg" class="check-icon" mode="aspectFit"></image>
+              <image v-if="selectedCoupon && selectedCoupon.id === coupon.id" src="/static/icons/check.png" class="check-icon" mode="aspectFit"></image>
             </view>
           </view>
         </view>

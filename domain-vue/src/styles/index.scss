@@ -1,0 +1,303 @@
+// ==========================================
+// 后台管理系统主样式文件
+// ==========================================
+
+@import './variables.scss';
+
+// 重置样式
+* {
+  box-sizing: border-box;
+}
+
+html {
+  line-height: 1.15;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  font-family: $font-family;
+  font-size: $font-size-base;
+  font-weight: $font-weight-normal;
+  line-height: $line-height-base;
+  color: $text-color-primary;
+  background-color: $bg-color-body;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// 清除默认样式
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: $font-weight-medium;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: $primary-color;
+  text-decoration: none;
+  
+  &:hover {
+    color: $primary-light;
+  }
+  
+  &:focus {
+    outline: none;
+  }
+}
+
+ul, ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// 表格样式
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+// 按钮重置
+button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  padding: 0;
+  font-family: inherit;
+}
+
+// 输入框重置
+input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  outline: none;
+}
+
+// 滚动条样式
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: $bg-color-component;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $border-color-base;
+  border-radius: 3px;
+  
+  &:hover {
+    background: $border-color-dark;
+  }
+}
+
+// 工具类
+.clearfix::after {
+  content: '';
+  display: table;
+  clear: both;
+}
+
+// 文本工具类
+.text-left { text-align: left !important; }
+.text-center { text-align: center !important; }
+.text-right { text-align: right !important; }
+
+.text-primary { color: $text-color-primary !important; }
+.text-secondary { color: $text-color-secondary !important; }
+.text-tertiary { color: $text-color-tertiary !important; }
+.text-disabled { color: $text-color-disabled !important; }
+
+.text-success { color: $success-color !important; }
+.text-warning { color: $warning-color !important; }
+.text-error { color: $error-color !important; }
+.text-info { color: $info-color !important; }
+
+.font-light { font-weight: $font-weight-light !important; }
+.font-normal { font-weight: $font-weight-normal !important; }
+.font-medium { font-weight: $font-weight-medium !important; }
+.font-semibold { font-weight: $font-weight-semibold !important; }
+.font-bold { font-weight: $font-weight-bold !important; }
+
+// 显示工具类
+.d-none { display: none !important; }
+.d-inline { display: inline !important; }
+.d-inline-block { display: inline-block !important; }
+.d-block { display: block !important; }
+.d-flex { display: flex !important; }
+.d-inline-flex { display: inline-flex !important; }
+
+.flex-row { flex-direction: row !important; }
+.flex-column { flex-direction: column !important; }
+.flex-wrap { flex-wrap: wrap !important; }
+.flex-nowrap { flex-wrap: nowrap !important; }
+
+.justify-start { justify-content: flex-start !important; }
+.justify-center { justify-content: center !important; }
+.justify-end { justify-content: flex-end !important; }
+.justify-between { justify-content: space-between !important; }
+.justify-around { justify-content: space-around !important; }
+
+.align-start { align-items: flex-start !important; }
+.align-center { align-items: center !important; }
+.align-end { align-items: flex-end !important; }
+.align-stretch { align-items: stretch !important; }
+
+// 间距工具类
+@each $prop, $abbrev in (margin: m, padding: p) {
+  @each $size, $length in (0: 0, 1: $spacing-xs, 2: $spacing-sm, 3: $spacing-md, 4: $spacing-lg, 5: $spacing-xl) {
+    .#{$abbrev}-#{$size} { #{$prop}: $length !important; }
+    .#{$abbrev}t-#{$size} { #{$prop}-top: $length !important; }
+    .#{$abbrev}r-#{$size} { #{$prop}-right: $length !important; }
+    .#{$abbrev}b-#{$size} { #{$prop}-bottom: $length !important; }
+    .#{$abbrev}l-#{$size} { #{$prop}-left: $length !important; }
+    .#{$abbrev}x-#{$size} { 
+      #{$prop}-left: $length !important;
+      #{$prop}-right: $length !important;
+    }
+    .#{$abbrev}y-#{$size} { 
+      #{$prop}-top: $length !important;
+      #{$prop}-bottom: $length !important;
+    }
+  }
+}
+
+// 布局容器
+.container {
+  max-width: $content-max-width;
+  margin: 0 auto;
+  padding: 0 $container-padding-horizontal;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -#{$spacing-sm};
+}
+
+.col {
+  padding: 0 $spacing-sm;
+  flex: 1;
+}
+
+// Element Plus 样式覆盖
+.el-menu {
+  border-right: none !important;
+}
+
+.el-menu-item {
+  &:hover {
+    background-color: $primary-1 !important;
+  }
+  
+  &.is-active {
+    background-color: $primary-1 !important;
+    color: $primary-color !important;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background-color: $primary-color;
+    }
+  }
+}
+
+.el-submenu__title {
+  &:hover {
+    background-color: $primary-1 !important;
+  }
+}
+
+.el-table {
+  .el-table__header {
+    th {
+      background-color: $bg-color-component !important;
+      color: $text-color-primary !important;
+      font-weight: $font-weight-medium !important;
+    }
+  }
+  
+  .el-table__row {
+    &:hover > td {
+      background-color: $primary-1 !important;
+    }
+  }
+}
+
+.el-card {
+  box-shadow: $card-shadow !important;
+  border: 1px solid $border-color-split !important;
+  
+  &:hover {
+    box-shadow: $card-shadow-hover !important;
+  }
+}
+
+.el-button--primary {
+  background-color: $primary-color !important;
+  border-color: $primary-color !important;
+  
+  &:hover {
+    background-color: $primary-light !important;
+    border-color: $primary-light !important;
+  }
+  
+  &:active {
+    background-color: $primary-dark !important;
+    border-color: $primary-dark !important;
+  }
+}
+
+// 页面动画
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity $motion-duration-mid $ease-out;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.slide-fade-enter-active {
+  transition: all $motion-duration-mid $ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all $motion-duration-fast $ease-in;
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(10px);
+  opacity: 0;
+}
+
+// 响应式工具类
+@media (max-width: 768px) {
+  .d-md-none { display: none !important; }
+  .d-md-block { display: block !important; }
+}
+
+@media (max-width: 992px) {
+  .d-lg-none { display: none !important; }
+  .d-lg-block { display: block !important; }
+}
+
+@media (max-width: 1200px) {
+  .d-xl-none { display: none !important; }
+  .d-xl-block { display: block !important; }
+}

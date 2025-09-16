@@ -1,108 +1,24 @@
 {
-  "name": "yibang-taskmall-miniprogram",
-  "appid": "__UNI__YIBANG_TASKMALL",
-  "description": "懿邦任务商城微信小程序",
-  "versionName": "1.0.0",
-  "versionCode": "100",
-  "transformPx": false,
-  "app-plus": {
-    "usingComponents": true,
-    "nvueStyleCompiler": "uni-app",
-    "compilerVersion": 3,
-    "splashscreen": {
-      "alwaysShowBeforeRender": true,
-      "waiting": true,
-      "autoclose": true,
-      "delay": 0
-    },
-    "modules": {},
-    "distribute": {
-      "android": {
-        "permissions": [
-          "<uses-permission android:name=\"android.permission.CHANGE_NETWORK_STATE\" />",
-          "<uses-permission android:name=\"android.permission.MOUNT_UNMOUNT_FILESYSTEMS\" />",
-          "<uses-permission android:name=\"android.permission.VIBRATE\" />",
-          "<uses-permission android:name=\"android.permission.READ_LOGS\" />",
-          "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\" />",
-          "<uses-feature android:name=\"android.hardware.camera.autofocus\" />",
-          "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />",
-          "<uses-permission android:name=\"android.permission.CAMERA\" />",
-          "<uses-permission android:name=\"android.permission.GET_ACCOUNTS\" />",
-          "<uses-permission android:name=\"android.permission.READ_PHONE_STATE\" />",
-          "<uses-permission android:name=\"android.permission.CHANGE_WIFI_STATE\" />",
-          "<uses-permission android:name=\"android.permission.WAKE_LOCK\" />",
-          "<uses-permission android:name=\"android.permission.FLASHLIGHT\" />",
-          "<uses-feature android:name=\"android.hardware.camera\" />",
-          "<uses-permission android:name=\"android.permission.WRITE_SETTINGS\" />"
-        ]
-      },
-      "ios": {},
-      "sdkConfigs": {}
-    }
-  },
-  "quickapp": {},
-  "mp-weixin": {
-    "appid": "",
-    "setting": {
-      "urlCheck": false
-    },
-    "usingComponents": true,
-    "permission": {
-      "scope.userInfo": {
-        "desc": "用于完善用户资料"
-      }
-    },
-    "requiredBackgroundModes": ["audio"],
-    "tabBar": {
-      "color": "#999999",
-      "selectedColor": "#FF6B6B",
-      "backgroundColor": "#FFFFFF",
-      "borderStyle": "black",
-      "list": [
-        {
-          "pagePath": "pages/index/index",
-          "text": "首页",
-          "iconPath": "static/icons/home.png",
-          "selectedIconPath": "static/icons/home-active.png"
+    "name" : "yibang-taskmall-miniprogram",
+    "appid" : "__UNI__ABCB1D1",
+    "description" : "懿邦任务商城微信小程序",
+    "versionName" : "1.0.0",
+    "versionCode" : "100",
+    "transformPx" : false,
+    "mp-weixin" : {
+        "appid" : "wxad54608e5225bcc0",
+        "setting" : {
+            "urlCheck" : false
         },
-        {
-          "pagePath": "pages/task/task",
-          "text": "任务",
-          "iconPath": "static/icons/task.png",
-          "selectedIconPath": "static/icons/task-active.png"
-        },
-        {
-          "pagePath": "pages/mall/mall",
-          "text": "商城",
-          "iconPath": "static/icons/mall.png",
-          "selectedIconPath": "static/icons/mall-active.png"
-        },
-        {
-          "pagePath": "pages/earnings/earnings",
-          "text": "收益",
-          "iconPath": "static/icons/earnings.png",
-          "selectedIconPath": "static/icons/earnings-active.png"
+        "usingComponents" : true,
+        "lazyCodeLoading" : "requiredComponents",
+        "requiredBackgroundModes" : [ "audio" ],
+        "window" : {
+            "navigationBarBackgroundColor" : "#FF6B6B",
+            "navigationBarTitleText" : "任务商城",
+            "navigationBarTextStyle" : "white",
+            "backgroundColor" : "#F5F5F5"
         }
-      ]
     },
-    "window": {
-      "navigationBarBackgroundColor": "#FF6B6B",
-      "navigationBarTitleText": "任务商城",
-      "navigationBarTextStyle": "white",
-      "backgroundColor": "#F5F5F5"
-    }
-  },
-  "mp-alipay": {
-    "usingComponents": true
-  },
-  "mp-baidu": {
-    "usingComponents": true
-  },
-  "mp-toutiao": {
-    "usingComponents": true
-  },
-  "uniStatistics": {
-    "enable": false
-  },
-  "vueVersion": "3"
+    "vueVersion" : "3"
 }

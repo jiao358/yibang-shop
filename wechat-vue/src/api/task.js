@@ -48,7 +48,7 @@ export const taskApi = {
 
   // 获取用户任务列表
   getUserTasks(params = {}) {
-    return get('/api/user/tasks', params)
+    return get('/api/tasks/user-tasks', params)
   },
 
   // 获取任务类型列表

@@ -114,7 +114,7 @@
     <view class="withdraw-history">
       <view class="history-header">
         <text class="history-title">最近提现</text>
-        <text class="more-btn" @click="goToWithdrawHistory">更多 ></text>
+        <button class="more-btn" @click="goToWithdrawHistory">更多</button>
       </view>
       <view class="history-list">
         <view class="history-item" v-for="record in recentWithdrawals" :key="record.id">
@@ -146,11 +146,15 @@
 <script>
 import { ref, computed, onMounted } from 'vue'
 import { useEarningsStore } from '@/stores/earnings'
+import { useUserStore } from '@/stores/user'
+import { withdrawApi } from '@/api/withdraw'
+import { userApi } from '@/api/user'
 
 export default {
   name: 'WithdrawPage',
   setup() {
     const earningsStore = useEarningsStore()
+    const userStore = useUserStore()
 
     // 响应式数据
     const withdrawAmount = ref('')
@@ -161,6 +165,8 @@ export default {
     const maxWithdrawAmount = ref(0)
     const withdrawFeeRate = ref(0.6)
     const quickAmounts = ref([10, 50, 100, 200, 500])
+    const loading = ref(false)
+    const withdrawConfig = ref({})
 
     // 计算属性
     const canWithdraw = computed(() => {
@@ -171,45 +177,50 @@ export default {
     // 方法
     const loadWithdrawData = async () => {
       try {
-        // Mock数据
-        userEarnings.value = {
-          balance: 128.50,
-          totalEarnings: 1256.80,
-          withdrawnAmount: 500.00,
-          frozenAmount: 12.30
-        }
-
-        maxWithdrawAmount.value = userEarnings.value.balance
-
-        wechatAccount.value = {
-          avatar: '/static/images/wechat-avatar.jpg',
-          nickname: '微信用户',
-          wechatId: 'wxid_123456789'
-        }
-
-        recentWithdrawals.value = [
-          {
-            id: 1,
-            amount: 100.00,
-            status: 'completed',
-            time: '2024-01-15 14:30'
-          },
-          {
-            id: 2,
-            amount: 50.00,
-            status: 'processing',
-            time: '2024-01-14 09:15'
-          },
-          {
-            id: 3,
-            amount: 200.00,
-            status: 'failed',
-            time: '2024-01-12 16:45'
+        loading.value = true
+        
+        // 加载用户收益信息
+        await earningsStore.getUserEarnings()
+        userEarnings.value = earningsStore.userEarnings
+        
+        // 计算可提现金额（余额 - 冻结金额）
+        const availableBalance = (userEarnings.value.balance || 0) - (userEarnings.value.frozenAmount || 0)
+        maxWithdrawAmount.value = Math.max(0, availableBalance)
+        
+        // 加载提现配置
+        const configResponse = await withdrawApi.getWithdrawConfig()
+        withdrawConfig.value = configResponse.data
+        minWithdrawAmount.value = withdrawConfig.value.minAmount || 10
+        withdrawFeeRate.value = withdrawConfig.value.feeRate || 0.6
+        quickAmounts.value = withdrawConfig.value.quickAmounts || [10, 50, 100, 200, 500]
+        
+        // 加载用户微信信息
+        if (userStore.isLoggedIn) {
+          const userInfo = userStore.userInfo
+          wechatAccount.value = {
+            avatar: userInfo.avatar || '/static/images/default-avatar.png',
+            nickname: userInfo.nickname || '微信用户',
+            wechatId: userInfo.openid || 'wxid_未获取'
           }
-        ]
+        }
+        
+        // 加载最近提现记录
+        const withdrawHistory = await withdrawApi.getRecentWithdraws(3)
+        recentWithdrawals.value = (withdrawHistory.data?.records || []).map(item => ({
+          id: item.id,
+          amount: (item.amount / 100).toFixed(2), // 分转元
+          status: item.status,
+          time: item.createdAt
+        }))
 
       } catch (error) {
         console.error('加载提现数据失败:', error)
+        uni.showToast({
+          title: '加载数据失败',
+          icon: 'none'
+        })
+      } finally {
+        loading.value = false
       }
     }
 
@@ -297,41 +308,75 @@ export default {
         return
       }
 
+      // 检查用户是否登录
+      if (!userStore.isLoggedIn) {
+        uni.showToast({
+          title: '请先登录',
+          icon: 'none'
+        })
+        return
+      }
+
+      // 最终确认
+      const confirmResult = await new Promise(resolve => {
+        uni.showModal({
+          title: '确认提现',
+          content: `提现金额：¥${withdrawAmount.value}\n手续费：¥${calculateFee()}\n实际到账：¥${calculateActualAmount()}\n\n提现申请提交后需要工作人员审核，审核通过后将通过微信支付打款到您的微信账户。`,
+          success: (res) => resolve(res.confirm),
+          fail: () => resolve(false)
+        })
+      })
+
+      if (!confirmResult) return
+
       try {
         uni.showLoading({ title: '提交中...' })
 
-        // 模拟API调用
-        await new Promise(resolve => setTimeout(resolve, 1000))
+        const withdrawData = {
+          amount: Math.round(parseFloat(withdrawAmount.value) * 100), // 转换为分
+          withdrawType: 'wechat_pay',
+          remark: '用户申请提现'
+        }
+
+        await withdrawApi.applyWithdraw(withdrawData)
 
         uni.hideLoading()
         
         uni.showModal({
           title: '提现申请已提交',
-          content: `提现金额：¥${withdrawAmount.value}\n实际到账：¥${calculateActualAmount()}\n预计1-3个工作日到账`,
+          content: `提现金额：¥${withdrawAmount.value}\n实际到账：¥${calculateActualAmount()}\n\n您的提现申请已提交成功，请耐心等待工作人员审核。审核通过后，款项将在1-3个工作日内到账。`,
           showCancel: false,
           success: () => {
-            // 更新余额
-            userEarnings.value.balance -= parseFloat(withdrawAmount.value)
-            maxWithdrawAmount.value = userEarnings.value.balance
             withdrawAmount.value = ''
-            
-            // 刷新提现记录
+            // 刷新数据
             loadWithdrawData()
           }
         })
 
       } catch (error) {
         uni.hideLoading()
+        console.error('提现申请失败:', error)
+        
+        let errorMessage = '提现申请失败'
+        if (error.response?.data?.message) {
+          errorMessage = error.response.data.message
+        } else if (error.message) {
+          errorMessage = error.message
+        }
+        
         uni.showToast({
-          title: '提现申请失败',
-          icon: 'none'
+          title: errorMessage,
+          icon: 'none',
+          duration: 3000
         })
       }
     }
 
     const goToWithdrawHistory = () => {
+      // 跳转到钱包明细页面的提现tab
+      uni.setStorageSync('walletQuery', { type: 'withdrawal' })
       uni.navigateTo({
-        url: '/pages/withdraw-history/withdraw-history'
+        url: '/pages/wallet/transactions'
       })
     }
 
@@ -672,8 +717,13 @@ export default {
 }
 
 .more-btn {
-  color: #FF6B6B;
+  background: #FF6B6B;
+  color: #FFFFFF;
   font-size: 24rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 12rpx;
+  border: none;
+  line-height: 1;
 }
 
 .history-list {

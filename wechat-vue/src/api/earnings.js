@@ -1,9 +1,9 @@
 import { get, post, put } from './request'
 
 export const earningsApi = {
-  // 获取用户收益信息
-  getUserEarnings() {
-    return get('/api/earnings/user')
+  // 获取用户收益信息 -> 对齐钱包汇总
+  getUserEarnings(params = {}) {
+    return get('/api/wallet/summary', params)
   },
 
   // 获取收益列表

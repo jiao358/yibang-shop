@@ -8,12 +8,21 @@ spring:
   application:
     name: yibang-taskmall
   
+  # Jackson配置
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+  
   # 数据源配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/yibang_taskmall?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/yibang_shop?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
     username: root
-    password: 123456
+    password: Pino542635
     hikari:
       minimum-idle: 5
       maximum-pool-size: 20
@@ -88,8 +97,8 @@ management:
 # 微信小程序配置
 wechat:
   miniapp:
-    app-id: your-app-id
-    app-secret: your-app-secret
+    app-id: wxad54608e5225bcc0
+    app-secret: 1ed7aa04200ac8670be420a64cf1ba5f
   pay:
     mch-id: your-mch-id
     api-key: your-api-key
@@ -103,7 +112,7 @@ pangle:
 # 系统配置
 system:
   jwt:
-    secret: yibang-taskmall-secret-key-2024
+    secret: yibang-erp-super-secure-jwt-secret-key-2024-with-512-bits-minimum-security-requirement-for-hmac-sha-algorithms
     expiration: 86400 # 24小时
     refresh-expiration: 604800 # 7天
   task:

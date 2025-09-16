@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/earnings")
+@RequestMapping("/earnings")
 @RequiredArgsConstructor
 @Tag(name = "收益管理", description = "收益相关接口")
 public class EarningsController {
@@ -45,7 +45,7 @@ public class EarningsController {
         // 3. 计算统计信息
         // 4. 返回统计结果
         
-        return Result.success("获取收益统计成功");
+        return Result.success();
     }
 
     /**
@@ -65,7 +65,7 @@ public class EarningsController {
         // 2. 根据类型筛选收益记录
         // 3. 分页返回结果
         
-        return Result.success("获取收益记录成功");
+        return Result.success();
     }
 
     /**
@@ -82,7 +82,7 @@ public class EarningsController {
         // 3. 计算占比和金额
         // 4. 返回统计结果
         
-        return Result.success("获取收益来源统计成功");
+        return Result.success();
     }
 
     /**
@@ -101,7 +101,7 @@ public class EarningsController {
         // 3. 生成趋势图表数据
         // 4. 返回趋势数据
         
-        return Result.success("获取收益趋势成功");
+        return Result.success();
     }
 
     /**
@@ -117,6 +117,6 @@ public class EarningsController {
         // 2. 计算总收益和已提现金额
         // 3. 返回可提现余额
         
-        return Result.success("获取用户余额成功");
+        return Result.success();
     }
 }

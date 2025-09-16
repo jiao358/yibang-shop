@@ -1,7 +1,7 @@
 <template>
   <view class="home-page">
     <!-- 顶部用户信息 -->
-    <view class="user-header">
+    <!-- <view class="user-header">
       <view class="user-info">
         <image class="avatar" :src="userInfo.avatar || '/static/images/default-avatar.png'" mode="aspectFill"></image>
         <view class="user-details">
@@ -12,22 +12,11 @@
       <view class="notification-btn" @click="goToNotifications">
         <image src="/static/icons/notification.png" mode="aspectFit"></image>
       </view>
-    </view>
+    </view> -->
 
-    <!-- 收益卡片 -->
-    <view class="earnings-card">
-      <view class="earnings-info">
-        <text class="earnings-label">我的收益</text>
-        <text class="earnings-amount">¥{{ userEarnings.balance || '0.00' }}</text>
-        <text class="earnings-desc">可提现余额</text>
-      </view>
-      <view class="withdraw-btn" @click="goToWithdraw">
-        <text>提现</text>
-      </view>
-    </view>
 
     <!-- 任务统计 -->
-    <view class="stats-card">
+    <view class="stats-card" @tap="goToTaskDetails">
       <view class="stat-item" v-for="(stat, index) in taskStats" :key="index">
         <text class="stat-value">{{ stat.value }}</text>
         <text class="stat-label">{{ stat.label }}</text>
@@ -61,19 +50,19 @@
     <!-- 快捷功能 -->
     <view class="quick-actions">
       <view class="action-item" @click="goToTask">
-        <image src="/static/icons/task-quick.png" mode="aspectFit"></image>
+        <image src="/static/icons/task.png" mode="aspectFit"></image>
         <text>任务大厅</text>
       </view>
       <view class="action-item" @click="goToMall">
-        <image src="/static/icons/mall-quick.png" mode="aspectFit"></image>
+        <image src="/static/icons/mall.png" mode="aspectFit"></image>
         <text>商城购物</text>
       </view>
       <view class="action-item" @click="goToEarnings">
-        <image src="/static/icons/earnings-quick.png" mode="aspectFit"></image>
+        <image src="/static/icons/earnings.png" mode="aspectFit"></image>
         <text>收益管理</text>
       </view>
       <view class="action-item" @click="goToInvite">
-        <image src="/static/icons/invite-quick.png" mode="aspectFit"></image>
+        <image src="/static/icons/more.png" mode="aspectFit"></image>
         <text>邀请好友</text>
       </view>
     </view>
@@ -100,7 +89,8 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/stores/user'
 import { useTaskStore } from '@/stores/task'
 import { useEarningsStore } from '@/stores/earnings'
@@ -113,43 +103,17 @@ export default {
     const earningsStore = useEarningsStore()
 
     // 响应式数据
-    const userInfo = ref({})
-    const userEarnings = ref({})
+    const userInfo = ref({
+      avatar: '',
+      nickname: '',
+      level: 0
+    })
     const taskStats = ref([
       { value: '5', label: '今日任务' },
       { value: '3', label: '已完成' },
       { value: '¥128', label: '总收益' }
     ])
-    const banners = ref([
-      { 
-        id: 1, 
-        image: '/static/images/banner1.jpg', 
-        title: '欢迎来到我们的商店',
-        subtitle: '发现精彩产品和优惠活动',
-        link: '/pages/task/task' 
-      },
-      { 
-        id: 2, 
-        image: '/static/images/banner2.jpg', 
-        title: '特别优惠',
-        subtitle: '所有商品最高5折优惠',
-        link: '/pages/mall/mall' 
-      },
-      { 
-        id: 3, 
-        image: '/static/images/banner3.jpg', 
-        title: '新品上市',
-        subtitle: '查看我们的最新系列',
-        link: '/pages/mall/mall' 
-      },
-      { 
-        id: 4, 
-        image: '/static/images/banner4.jpg', 
-        title: '免费配送',
-        subtitle: '订单满50元即可享受免费配送',
-        link: '/pages/order/order' 
-      }
-    ])
+    const banners = ref([])
     const recommendedTasks = ref([])
 
     // 计算属性
@@ -168,14 +132,6 @@ export default {
       }
     }
 
-    const loadEarnings = async () => {
-      try {
-        await earningsStore.getUserEarnings()
-        userEarnings.value = earningsStore.userEarnings
-      } catch (error) {
-        console.error('加载收益信息失败:', error)
-      }
-    }
 
     const loadRecommendedTasks = async () => {
       try {
@@ -184,6 +140,18 @@ export default {
       } catch (error) {
         console.error('加载推荐任务失败:', error)
       }
+    }
+
+    const loadBanners = async () => {
+      try {
+        // 可改为后端: /api/system/banners
+        banners.value = [
+          { id: 1, image: '/static/images/banner1.jpg', title: '欢迎来到我们的商店', subtitle: '发现精彩产品和优惠活动', link: '/pages/task/task' },
+          { id: 2, image: '/static/images/banner2.jpg', title: '特别优惠', subtitle: '所有商品最高5折优惠', link: '/pages/mall/mall' },
+          { id: 3, image: '/static/images/banner3.jpg', title: '新品上市', subtitle: '查看我们的最新系列', link: '/pages/mall/mall' },
+          { id: 4, image: '/static/images/banner4.jpg', title: '免费配送', subtitle: '订单满50元即可享受免费配送', link: '/pages/order/order' }
+        ]
+      } catch (e) {}
     }
 
     const goToTask = () => {
@@ -198,9 +166,6 @@ export default {
       uni.switchTab({ url: '/pages/earnings/earnings' })
     }
 
-    const goToWithdraw = () => {
-      uni.navigateTo({ url: '/pages/withdraw/withdraw' })
-    }
 
     const goToNotifications = () => {
       uni.navigateTo({ url: '/pages/notifications/notifications' })
@@ -212,6 +177,10 @@ export default {
 
     const goToTaskDetail = (taskId) => {
       uni.navigateTo({ url: `/pages/task-detail/task-detail?id=${taskId}` })
+    }
+
+    const goToTaskDetails = () => {
+      uni.navigateTo({ url: '/pages/task/task-details' })
     }
 
     const onBannerClick = (banner) => {
@@ -233,13 +202,18 @@ export default {
     // 生命周期
     onMounted(() => {
       loadUserInfo()
-      loadEarnings()
+      loadRecommendedTasks()
+      loadBanners()
+    })
+
+    onShow(() => {
+      // 回到首页tab时刷新关键数据
+      loadUserInfo()
       loadRecommendedTasks()
     })
 
     return {
       userInfo,
-      userEarnings,
       taskStats,
       banners,
       recommendedTasks,
@@ -247,10 +221,10 @@ export default {
       goToTask,
       goToMall,
       goToEarnings,
-      goToWithdraw,
       goToNotifications,
       goToInvite,
       goToTaskDetail,
+      goToTaskDetails,
       onBannerClick,
       getTaskStatusText
     }
@@ -315,48 +289,6 @@ export default {
   height: 40rpx;
 }
 
-.earnings-card {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #FFFFFF;
-  margin: 20rpx 30rpx;
-  padding: 30rpx;
-  border-radius: 16rpx;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
-}
-
-.earnings-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.earnings-label {
-  color: #666666;
-  font-size: 24rpx;
-  margin-bottom: 8rpx;
-}
-
-.earnings-amount {
-  color: #FF6B6B;
-  font-size: 48rpx;
-  font-weight: 700;
-  margin-bottom: 8rpx;
-}
-
-.earnings-desc {
-  color: #999999;
-  font-size: 22rpx;
-}
-
-.withdraw-btn {
-  background: #FF6B6B;
-  color: #FFFFFF;
-  padding: 16rpx 32rpx;
-  border-radius: 24rpx;
-  font-size: 28rpx;
-  font-weight: 600;
-}
 
 .stats-card {
   display: flex;

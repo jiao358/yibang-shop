@@ -14,7 +14,7 @@
     <!-- 头部 -->
     <view class="header">
       <view class="header-left" @click="goBack">
-        <image src="/static/icons/arrow-left.svg" class="back-icon" mode="aspectFit"></image>
+        <image src="/static/icons/order.png" class="back-icon" mode="aspectFit"></image>
       </view>
       <text class="header-title">收货地址</text>
       <view class="header-right" @click="addAddress">
@@ -25,7 +25,7 @@
     <!-- 地址列表 -->
     <view class="address-list">
       <view v-if="addressList.length === 0" class="empty-state">
-        <image src="/static/images/empty-address.svg" class="empty-image" mode="aspectFit"></image>
+        <image src="/static/icons/info.png" class="empty-image" mode="aspectFit"></image>
         <text class="empty-text">暂无收货地址</text>
         <text class="empty-desc">点击右上角"新增"添加收货地址</text>
         <button class="add-btn" @click="addAddress">添加地址</button>
@@ -50,11 +50,11 @@
           </view>
           <view class="address-actions">
             <view class="action-btn" @click.stop="editAddress(address)">
-              <image src="/static/icons/edit.svg" class="action-icon" mode="aspectFit"></image>
+              <image src="/static/icons/task.png" class="action-icon" mode="aspectFit"></image>
               <text>编辑</text>
             </view>
             <view class="action-btn" @click.stop="deleteAddress(address.id)">
-              <image src="/static/icons/delete.svg" class="action-icon" mode="aspectFit"></image>
+              <image src="/static/icons/order.png" class="action-icon" mode="aspectFit"></image>
               <text>删除</text>
             </view>
           </view>
@@ -69,7 +69,7 @@
         <view class="form-header">
           <text class="form-title">{{ isEdit ? '编辑地址' : '新增地址' }}</text>
           <view class="close-btn" @click="closeAddressForm">
-            <image src="/static/icons/close.svg" class="close-icon" mode="aspectFit"></image>
+            <image src="/static/icons/settings.png" class="close-icon" mode="aspectFit"></image>
           </view>
         </view>
         
@@ -99,7 +99,7 @@
             <text class="form-label">所在地区</text>
             <view class="region-selector" @click="openRegionPicker">
               <text class="region-text">{{ formData.region || '请选择省市区' }}</text>
-              <image src="/static/icons/arrow-right.svg" class="arrow-icon" mode="aspectFit"></image>
+              <image src="/static/icons/arrow-right.png" class="arrow-icon" mode="aspectFit"></image>
             </view>
           </view>
           
@@ -116,7 +116,7 @@
           <view class="form-item">
             <view class="checkbox-item" @click="toggleDefault">
               <view class="checkbox" :class="{ checked: formData.isDefault }">
-                <image v-if="formData.isDefault" src="/static/icons/check.svg" class="check-icon" mode="aspectFit"></image>
+                <image v-if="formData.isDefault" src="/static/icons/check.png" class="check-icon" mode="aspectFit"></image>
               </view>
               <text class="checkbox-text">设为默认地址</text>
             </view>

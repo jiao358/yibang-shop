@@ -1,72 +1,44 @@
-import request from './request'
+import { get, post, put, del } from './request'
 
 // 订单相关API
 export const orderApi = {
   // 获取用户订单列表
   getUserOrders(params = {}) {
-    return request({
-      url: '/api/orders',
-      method: 'GET',
-      data: params
-    })
+    return get('/api/orders', params)
   },
 
   // 获取订单详情
   getOrderDetail(orderId) {
-    return request({
-      url: `/api/orders/${orderId}`,
-      method: 'GET'
-    })
+    return get(`/api/orders/${orderId}`)
   },
 
   // 创建订单
   createOrder(orderData) {
-    return request({
-      url: '/api/orders',
-      method: 'POST',
-      data: orderData
-    })
+    return post('/api/orders', orderData)
   },
 
   // 取消订单
   cancelOrder(orderId) {
-    return request({
-      url: `/api/orders/${orderId}/cancel`,
-      method: 'PUT'
-    })
+    return put(`/api/orders/${orderId}/cancel`)
   },
 
   // 支付订单
   payOrder(orderId, paymentData) {
-    return request({
-      url: `/api/orders/${orderId}/pay`,
-      method: 'POST',
-      data: paymentData
-    })
+    return post(`/api/orders/${orderId}/pay`, paymentData)
   },
 
   // 确认收货
   confirmOrder(orderId) {
-    return request({
-      url: `/api/orders/${orderId}/confirm`,
-      method: 'PUT'
-    })
+    return put(`/api/orders/${orderId}/confirm`)
   },
 
   // 评价订单
   reviewOrder(orderId, reviewData) {
-    return request({
-      url: `/api/orders/${orderId}/review`,
-      method: 'POST',
-      data: reviewData
-    })
+    return post(`/api/orders/${orderId}/review`, reviewData)
   },
 
   // 获取订单统计
   getOrderStats() {
-    return request({
-      url: '/api/orders/stats',
-      method: 'GET'
-    })
+    return get('/api/orders/stats')
   }
 }

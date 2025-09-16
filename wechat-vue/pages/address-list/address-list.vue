@@ -18,7 +18,7 @@
       </view>
       <text class="header-title">收货地址</text>
       <view class="header-right" @click="addAddress">
-        <text class="add-text">新增</text>
+        <text class="add-text">新增22</text>
       </view>
     </view>
 
