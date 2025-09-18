@@ -19,6 +19,9 @@ public class NotificationResponse {
     @Schema(description = "类型")
     private String type;
 
+    @Schema(description = "状态")
+    private String status;
+
     @Schema(description = "创建时间")
     private LocalDateTime createdAt;
 }

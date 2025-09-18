@@ -3,7 +3,7 @@
     <div class="login-container">
       <div class="login-header">
         <div class="logo">
-          <img src="/logo.png" alt="Logo" class="logo-image" />
+          <div class="logo-image" />
           <h1 class="logo-text">任务商城后台管理</h1>
         </div>
         <p class="login-subtitle">企业级后台管理系统</p>
@@ -89,6 +89,7 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import { authApi } from '@/api/auth'
 
 const router = useRouter()
 const loginFormRef = ref()
@@ -121,26 +122,25 @@ const handleLogin = async () => {
     
     loginLoading.value = true
     
-    // TODO: 实际登录逻辑 - 对接ERP系统SSO
-    // 模拟登录延迟
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    // 模拟登录成功
-    const mockToken = 'mock_admin_token_' + Date.now()
-    const mockUser = {
-      id: 1,
+    // 调用后端登录接口
+    const response = await authApi.adminLogin({
       username: loginForm.username,
-      name: '管理员',
-      avatar: '/avatar.jpg',
-      roles: ['admin']
+      password: loginForm.password
+    })
+    
+    if (response.code === 200) {
+      const { token, user, expiresIn } = response.data
+      
+      // 存储登录信息
+      localStorage.setItem('admin_token', token)
+      localStorage.setItem('admin_user', JSON.stringify(user))
+      localStorage.setItem('admin_token_expires', String(Date.now() + expiresIn * 1000))
+      
+      ElMessage.success('登录成功')
+      router.push('/dashboard')
+    } else {
+      ElMessage.error(response.message || '登录失败')
     }
-    
-    // 存储登录信息
-    localStorage.setItem('admin_token', mockToken)
-    localStorage.setItem('admin_user', JSON.stringify(mockUser))
-    
-    ElMessage.success('登录成功')
-    router.push('/dashboard')
     
   } catch (error) {
     console.error('登录失败:', error)

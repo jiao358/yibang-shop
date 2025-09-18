@@ -1,0 +1,39 @@
+# Bootstrap配置文件
+# 用于微服务启动时的配置，优先级高于application.yml
+spring:
+  application:
+    name: yibang-taskmall
+  
+  # Nacos配置中心（如果需要的话）
+  cloud:
+    nacos:
+      config:
+        server-addr: 127.0.0.1:8848
+        namespace: public
+        group: DEFAULT_GROUP
+        file-extension: yml
+        enabled: false  # 暂时不启用配置中心，只使用服务发现
+      
+      # 服务发现配置
+      discovery:
+        server-addr: 127.0.0.1:8848
+        namespace: public
+        group: DEFAULT_GROUP
+        service: yibang-taskmall
+        enabled: true
+        register-enabled: true
+        instance-enabled: true
+        ephemeral: true
+        cluster-name: DEFAULT
+        metadata:
+          version: 1.0.0
+          zone: default-zone
+          description: 懿邦任务商城后端服务
+
+# 日志配置
+logging:
+  level:
+    com.alibaba.nacos: info
+    com.yibang.taskmall: debug
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{traceId:-}] %logger{50} - %msg%n'

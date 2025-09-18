@@ -88,9 +88,8 @@
             <el-form-item label="任务图片">
               <el-upload
                 class="image-uploader"
-                action="/api/bk/system/upload"
+                :http-request="handleImageUpload"
                 :show-file-list="false"
-                :on-success="handleImageSuccess"
                 :before-upload="beforeImageUpload"
               >
                 <img v-if="formData.imageUrl" :src="formData.imageUrl" class="uploaded-image" />
@@ -133,6 +132,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import { taskApi } from '@/api/task'
+import { systemApi } from '@/api/system'
 
 const router = useRouter()
 const formRef = ref()
@@ -180,12 +180,18 @@ const taskTypes = ref({
   share: '分享任务'
 })
 
-// 图片上传成功
-const handleImageSuccess = (response) => {
-  if (response.code === 200) {
-    formData.imageUrl = response.data.url
-    ElMessage.success('图片上传成功')
-  } else {
+// 自定义图片上传
+const handleImageUpload = async (options) => {
+  try {
+    const response = await systemApi.uploadFile(options.file, 'image')
+    if (response.code === 200) {
+      formData.imageUrl = response.data.url
+      ElMessage.success('图片上传成功')
+    } else {
+      ElMessage.error('图片上传失败')
+    }
+  } catch (error) {
+    console.error('图片上传失败:', error)
     ElMessage.error('图片上传失败')
   }
 }

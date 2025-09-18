@@ -148,7 +148,14 @@ export default {
         })
         hasMore.value = mallStore.products.length < mallStore.total
         page.value++
-      } catch (e) { uni.showToast({ title: '商品加载失败', icon: 'none' }) }
+      } catch (e) { 
+        console.log('estelas',e);
+        // 检查是否是401未登录错误（request.js中抛出的Error对象）
+        if (e && e.message === '登录已过期') {
+          uni.showToast({ title: '请先登录', icon: 'none' })
+          return
+        }
+        uni.showToast({ title: '商品加载失败', icon: 'none' }) }
     }
 
     const loadMore = () => loadProducts(false)

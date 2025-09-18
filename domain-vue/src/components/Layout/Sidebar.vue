@@ -3,7 +3,7 @@
     <!-- Logo 区域 -->
     <div class="sidebar-logo">
       <div class="logo-content" :class="{ 'is-collapsed': collapsed }">
-        <img src="/logo.png" alt="Logo" class="logo-image" />
+        <el-icon class="logo-image"><Expand /></el-icon>
         <span v-if="!collapsed" class="logo-text">任务商城后台</span>
       </div>
     </div>
@@ -44,7 +44,7 @@
             </template>
             
             <el-menu-item
-              v-for="child in route.children"
+              v-for="child in route.children.filter(child => !child.meta?.hidden)"
               :key="child.path"
               :index="route.path + '/' + child.path"
               :class="{ 'is-active': isActive(child, route.path) }"

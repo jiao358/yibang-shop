@@ -14,6 +14,15 @@ public class TaskStatsResponse {
     @Schema(description = "总任务数")
     private Long totalTasks;
 
+    @Schema(description = "活跃任务数")
+    private Long activeTasks;
+
+    @Schema(description = "非活跃任务数")
+    private Long inactiveTasks;
+
+    @Schema(description = "已完成任务数")
+    private Long completedTasks;
+
     @Schema(description = "按状态统计")
     private Map<String, Long> byStatus;
 

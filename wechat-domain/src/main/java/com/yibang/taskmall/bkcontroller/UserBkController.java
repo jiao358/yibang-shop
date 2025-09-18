@@ -198,6 +198,35 @@ public class UserBkController {
     }
 
     /**
+     * 获取用户等级选项
+     */
+    @GetMapping("/levels")
+    @Operation(summary = "获取用户等级选项", description = "获取所有可用的用户等级")
+    public Result<Map<String, Object>> getUserLevels() {
+        log.info("获取用户等级选项");
+        
+        try {
+            // TODO: Redis缓存 - 键名: bk.users:levels, TTL: 1小时
+            String cacheKey = "bk.users:levels";
+            Map<String, Object> cached = (Map<String, Object>) redisTemplate.opsForValue().get(cacheKey);
+            if (cached != null) {
+                return Result.success(cached);
+            }
+            
+            Map<String, Object> result = userBkService.getUserLevels();
+            
+            // 缓存结果1小时
+            redisTemplate.opsForValue().set(cacheKey, result, 1, TimeUnit.HOURS);
+            
+            return Result.success(result);
+            
+        } catch (Exception e) {
+            log.error("获取用户等级选项失败", e);
+            return Result.error("获取用户等级选项失败: " + e.getMessage());
+        }
+    }
+
+    /**
      * 清除用户详情缓存
      */
     private void clearUserCache(Long userId) {

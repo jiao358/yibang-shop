@@ -3,52 +3,32 @@ import request from './request'
 export const taskApi = {
   // 分页查询任务列表
   getTaskList(params) {
-    return request({
-      url: '/bk/tasks',
-      method: 'get',
-      params
-    })
+    return request.get('/bk/tasks', { params })
   },
 
   // 获取任务详情
   getTaskDetail(taskId) {
-    return request({
-      url: `/bk/tasks/${taskId}`,
-      method: 'get'
-    })
+    return request.get(`/bk/tasks/${taskId}`)
   },
 
   // 创建任务
   createTask(data) {
-    return request({
-      url: '/bk/tasks',
-      method: 'post',
-      data
-    })
+    return request.post('/bk/tasks', data)
   },
 
   // 更新任务
   updateTask(taskId, data) {
-    return request({
-      url: `/bk/tasks/${taskId}`,
-      method: 'put',
-      data
-    })
+    return request.put(`/bk/tasks/${taskId}`, data)
   },
 
   // 删除任务
   deleteTask(taskId) {
-    return request({
-      url: `/bk/tasks/${taskId}`,
-      method: 'delete'
-    })
+    return request.delete(`/bk/tasks/${taskId}`)
   },
 
   // 批量操作任务
   batchOperation(taskIds, operation) {
-    return request({
-      url: '/bk/tasks/batch',
-      method: 'post',
+    return request.post('/bk/tasks/batch', null, {
       params: {
         taskIds: taskIds.join(','),
         operation
@@ -58,18 +38,11 @@ export const taskApi = {
 
   // 获取任务统计
   getTaskStats(params) {
-    return request({
-      url: '/bk/tasks/stats',
-      method: 'get',
-      params
-    })
+    return request.get('/bk/tasks/stats', { params })
   },
 
   // 获取任务类型选项
   getTaskTypes() {
-    return request({
-      url: '/bk/tasks/types',
-      method: 'get'
-    })
+    return request.get('/bk/tasks/types')
   }
 }

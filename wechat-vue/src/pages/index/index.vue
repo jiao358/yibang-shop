@@ -144,14 +144,18 @@ export default {
 
     const loadBanners = async () => {
       try {
-        // 可改为后端: /api/system/banners
-        banners.value = [
-          { id: 1, image: '/static/images/banner1.jpg', title: '欢迎来到我们的商店', subtitle: '发现精彩产品和优惠活动', link: '/pages/task/task' },
-          { id: 2, image: '/static/images/banner2.jpg', title: '特别优惠', subtitle: '所有商品最高5折优惠', link: '/pages/mall/mall' },
-          { id: 3, image: '/static/images/banner3.jpg', title: '新品上市', subtitle: '查看我们的最新系列', link: '/pages/mall/mall' },
-          { id: 4, image: '/static/images/banner4.jpg', title: '免费配送', subtitle: '订单满50元即可享受免费配送', link: '/pages/order/order' }
-        ]
-      } catch (e) {}
+        const res = await uni.request({ url: '/api/public/banners', method: 'GET' })
+        const list = (res && res[1] && res[1].data && res[1].data.data) ? res[1].data.data : (res.data && res.data.data ? res.data.data : [])
+        banners.value = (list || []).map(b => ({
+          id: b.id,
+          image: b.imageUrl,
+          title: b.titleZh || '',
+          subtitle: b.titleEn || '',
+          link: b.enableJump ? (b.jumpTarget || '') : ''
+        }))
+      } catch (e) {
+        banners.value = []
+      }
     }
 
     const goToTask = () => {

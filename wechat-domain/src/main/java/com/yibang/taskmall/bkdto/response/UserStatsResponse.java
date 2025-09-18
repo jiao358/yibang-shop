@@ -14,6 +14,15 @@ public class UserStatsResponse {
     @Schema(description = "总用户数")
     private Long totalUsers;
 
+    @Schema(description = "活跃用户数")
+    private Long activeUsers;
+
+    @Schema(description = "非活跃用户数")
+    private Long inactiveUsers;
+
+    @Schema(description = "新用户数")
+    private Long newUsers;
+
     @Schema(description = "按等级统计")
     private Map<String, Long> byLevel;
 

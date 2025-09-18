@@ -8,6 +8,23 @@ spring:
   application:
     name: yibang-taskmall
   
+  # Nacos服务发现配置
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+        namespace: public
+        group: DEFAULT_GROUP
+        service: yibang-taskmall
+        enabled: true
+        register-enabled: true
+        instance-enabled: true
+        ephemeral: true
+        cluster-name: DEFAULT
+        metadata:
+          version: 1.0.0
+          zone: default-zone
+  
   # Jackson配置
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
@@ -122,3 +139,14 @@ system:
     min-amount: 1000 # 最低提现金额（分）
     max-amount: 100000 # 最高提现金额（分）
     fee-rate: 0.006 # 提现手续费率
+  # 文件上传配置
+  file:
+    upload:
+      path: /data/wx_uploads/prod/
+      image:
+        max-size: 10MB
+        allowed-types: jpg,jpeg,png,gif,webp
+        path: images/products
+        access:
+          # **重要：必须改为生产环境的实际域名或CDN地址**
+          base-url: https://www.yibangkj.com/static/

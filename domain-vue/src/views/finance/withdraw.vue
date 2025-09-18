@@ -208,7 +208,7 @@
               v-if="row.status === 'processing'"
               type="text" 
               size="small" 
-              @click="handleConfirmPayment(row)"
+              @click="openConfirmPayment(row)"
               class="primary-btn"
             >
               确认打款
@@ -570,8 +570,8 @@ const handleBatchApprove = async (approved) => {
   }
 }
 
-// 确认打款
-const handleConfirmPayment = (row) => {
+// 打开确认打款弹窗
+const openConfirmPayment = (row) => {
   currentWithdraw.value = row
   Object.assign(paymentForm, {
     wechatTransactionId: '',

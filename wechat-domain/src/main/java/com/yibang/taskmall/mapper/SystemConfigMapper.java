@@ -9,8 +9,8 @@ import org.apache.ibatis.annotations.Select;
 import java.util.List;
 
 /**
- * 系统配置Mapper
- *
+ * 系统配置Mapper接口
+ * 
  * @author yibang
  * @since 2024-01-15
  */
@@ -18,14 +18,20 @@ import java.util.List;
 public interface SystemConfigMapper extends BaseMapper<SystemConfig> {
 
     /**
-     * 根据配置组获取配置列表
+     * 根据配置键前缀查询配置列表
      */
-    @Select("SELECT * FROM system_configs WHERE config_group = #{configGroup} AND is_enabled = 1 ORDER BY sort_order ASC")
-    List<SystemConfig> selectByConfigGroup(@Param("configGroup") String configGroup);
+    @Select("SELECT * FROM system_config WHERE config_key LIKE CONCAT(#{prefix}, '%') AND is_public = 1 ORDER BY id ASC")
+    List<SystemConfig> selectByKeyPrefix(@Param("prefix") String prefix);
 
     /**
-     * 根据配置键名获取配置
+     * 根据配置键查询配置
      */
-    @Select("SELECT * FROM system_configs WHERE config_key = #{configKey} AND is_enabled = 1")
-    SystemConfig selectByConfigKey(@Param("configKey") String configKey);
+    @Select("SELECT * FROM system_config WHERE config_key = #{key} AND is_public = 1 LIMIT 1")
+    SystemConfig selectByKey(@Param("key") String key);
+
+    /**
+     * 批量更新配置状态
+     */
+    @Select("UPDATE system_config SET is_public = #{isPublic}, updated_at = NOW() WHERE id IN (#{ids})")
+    int batchUpdateStatus(@Param("ids") List<Long> ids, @Param("isPublic") Boolean isPublic);
 }

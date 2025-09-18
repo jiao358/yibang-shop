@@ -1,9 +1,7 @@
 package com.yibang.taskmall.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yibang.taskmall.config.FileUploadProperties;
 import com.yibang.taskmall.dto.response.FileUploadDTO;
 import com.yibang.taskmall.entity.FileUpload;
 import com.yibang.taskmall.mapper.FileUploadMapper;
@@ -23,7 +21,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -40,8 +37,7 @@ import java.util.stream.Collectors;
 public class FileUploadServiceImpl implements FileUploadService {
 
     private final FileUploadMapper fileUploadMapper;
-    private final SystemConfigService systemConfigService;
-    private final ObjectMapper objectMapper;
+    private final FileUploadProperties fileUploadProperties;
 
     @Override
     public FileUploadDTO uploadAvatar(MultipartFile file, Long userId, String uploadIp) {
@@ -59,8 +55,7 @@ public class FileUploadServiceImpl implements FileUploadService {
             // 生成文件存储路径
             String fileName = generateFileName(file.getOriginalFilename());
             String relativePath = generateFilePath(uploadType, fileName);
-            String storagePath = getStoragePath();
-            String fullPath = storagePath + relativePath;
+            String fullPath = fileUploadProperties.getImageStoragePath(fileName);
             
             // 确保目录存在
             Path directory = Paths.get(fullPath).getParent();
@@ -72,8 +67,7 @@ public class FileUploadServiceImpl implements FileUploadService {
             file.transferTo(new File(fullPath));
             
             // 生成访问URL
-            String baseUrl = systemConfigService.getConfigValue("upload.base_url", "");
-            String fileUrl = baseUrl + relativePath;
+            String fileUrl = fileUploadProperties.getImageAccessUrl(fileName);
             
             // 保存文件记录
             FileUpload fileUpload = new FileUpload();
@@ -169,9 +163,8 @@ public class FileUploadServiceImpl implements FileUploadService {
         
         // 检查文件类型
         String extension = getFileExtension(file.getOriginalFilename());
-        List<String> allowedTypes = getAllowedFileTypes();
-        if (!allowedTypes.contains(extension.toLowerCase())) {
-            throw new RuntimeException("不支持的文件类型: " + extension);
+        if (!fileUploadProperties.isAllowedImageType(extension)) {
+            throw new RuntimeException("不支持的文件类型: " + extension + "，允许的类型: " + fileUploadProperties.getImage().getAllowedTypes());
         }
     }
 
@@ -180,34 +173,12 @@ public class FileUploadServiceImpl implements FileUploadService {
      */
     private long getMaxFileSize(String uploadType) {
         if ("avatar".equals(uploadType)) {
-            return Long.parseLong(systemConfigService.getConfigValue("upload.avatar_max_size", "2097152"));
+            // 头像文件限制更小
+            return 2 * 1024 * 1024; // 2MB
         }
-        return Long.parseLong(systemConfigService.getConfigValue("upload.max_file_size", "10485760"));
+        return fileUploadProperties.getImageMaxSizeBytes();
     }
 
-    /**
-     * 获取允许的文件类型
-     */
-    private List<String> getAllowedFileTypes() {
-        try {
-            String allowedTypesJson = systemConfigService.getConfigValue("upload.allowed_types", "[\"jpg\",\"jpeg\",\"png\",\"gif\"]");
-            return objectMapper.readValue(allowedTypesJson, new TypeReference<List<String>>() {});
-        } catch (Exception e) {
-            log.warn("解析允许的文件类型失败，使用默认值: {}", e.getMessage());
-            return Arrays.asList("jpg", "jpeg", "png", "gif");
-        }
-    }
-
-    /**
-     * 获取存储路径
-     */
-    private String getStoragePath() {
-        String storagePath = systemConfigService.getConfigValue("upload.storage_path", "/uploads");
-        if (!storagePath.endsWith("/")) {
-            storagePath += "/";
-        }
-        return System.getProperty("user.dir") + storagePath;
-    }
 
     /**
      * 生成文件名

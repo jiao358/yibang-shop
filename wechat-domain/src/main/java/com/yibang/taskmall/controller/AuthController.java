@@ -3,13 +3,18 @@ package com.yibang.taskmall.controller;
 import com.yibang.taskmall.common.Result;
 import com.yibang.taskmall.dto.request.WechatLoginRequest;
 import com.yibang.taskmall.dto.request.RefreshTokenRequest;
+import com.yibang.taskmall.dto.request.AdminLoginRequest;
 import com.yibang.taskmall.dto.response.LoginResponse;
 import com.yibang.taskmall.dto.response.TokenResponse;
 import com.yibang.taskmall.dto.response.WechatUserInfo;
+import com.yibang.taskmall.dto.response.AdminLoginResponse;
+import com.yibang.taskmall.dto.response.AdminUserInfo;
 import com.yibang.taskmall.entity.User;
 import com.yibang.taskmall.service.AuthService;
 import com.yibang.taskmall.service.UserService;
 import com.yibang.taskmall.service.WechatService;
+import com.yibang.taskmall.security.JwtTokenProvider;
+import com.yibang.taskmall.service.ErpIntegrationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -39,6 +45,8 @@ public class AuthController {
     private final WechatService wechatService;
     private final UserService userService;
     private final StringRedisTemplate stringRedisTemplate;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final ErpIntegrationService erpIntegrationService;
 
     private static final String USER_CACHE_KEY_FMT = "user:info:%d";
     private static final long USER_CACHE_TTL_MINUTES = 30; // 用户信息缓存30分钟
@@ -133,6 +141,72 @@ public class AuthController {
             return Result.success(data);
         } catch (Exception e) {
             log.error("获取用户信息失败", e);
+            return Result.error("获取用户信息失败: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/admin-login")
+    @Operation(summary = "管理端登录", description = "管理员登录接口")
+    public Result<AdminLoginResponse> adminLogin(@RequestBody AdminLoginRequest request) {
+        log.info("管理端登录请求: {}", request.getUsername());
+        try {
+            // 对接ERP系统SSO验证用户名密码
+            Map<String, Object> erpResult = erpIntegrationService.validateUser(request.getUsername(), request.getPassword());
+            if (!Boolean.TRUE.equals(erpResult.get("success"))) {
+                return Result.error(erpResult.get("message").toString());
+            }
+            
+            // 使用ERP返回的用户信息
+            AdminUserInfo userInfo = new AdminUserInfo();
+            userInfo.setId(1L);
+            userInfo.setUsername(request.getUsername());
+            userInfo.setName(erpResult.get("name").toString());
+            userInfo.setAvatar("/avatar.jpg");
+            userInfo.setRoles((List<String>) erpResult.get("roles"));
+            userInfo.setEmail(erpResult.get("email").toString());
+            userInfo.setPhone(erpResult.get("phone").toString());
+            
+            // 生成JWT token
+            String token = jwtTokenProvider.generateToken(userInfo.getId(), null);
+            
+            AdminLoginResponse response = new AdminLoginResponse();
+            response.setToken(token);
+            response.setUser(userInfo);
+            response.setExpiresIn(7200L);
+            
+            log.info("管理端登录成功: userId={}", userInfo.getId());
+            return Result.success(response);
+        } catch (Exception e) {
+            log.error("管理端登录失败", e);
+            return Result.error("登录失败: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/me")
+    @Operation(summary = "获取当前用户信息", description = "获取当前登录管理员信息")
+    public Result<AdminUserInfo> getCurrentUser() {
+        log.info("获取当前用户信息请求");
+        try {
+            Long userId;
+            try {
+                userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
+            } catch (Exception e) {
+                return Result.error("未登录");
+            }
+            
+            // Mock返回用户信息
+            AdminUserInfo userInfo = new AdminUserInfo();
+            userInfo.setId(userId);
+            userInfo.setUsername("admin");
+            userInfo.setName("系统管理员");
+            userInfo.setAvatar("/avatar.jpg");
+            userInfo.setRoles(java.util.Arrays.asList("admin"));
+            userInfo.setEmail("admin@yibang.com");
+            userInfo.setPhone("13800138000");
+            
+            return Result.success(userInfo);
+        } catch (Exception e) {
+            log.error("获取当前用户信息失败", e);
             return Result.error("获取用户信息失败: " + e.getMessage());
         }
     }

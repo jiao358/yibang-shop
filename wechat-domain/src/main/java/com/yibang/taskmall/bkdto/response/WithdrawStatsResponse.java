@@ -8,7 +8,19 @@ import java.util.Map;
 @Data
 public class WithdrawStatsResponse {
     @Schema(description = "总申请数")
-    private Long total;
+    private Long totalWithdraws;
+
+    @Schema(description = "待处理数")
+    private Long pendingWithdraws;
+
+    @Schema(description = "已完成数")
+    private Long completedWithdraws;
+
+    @Schema(description = "失败数")
+    private Long failedWithdraws;
+
+    @Schema(description = "总金额")
+    private Long totalAmount;
 
     @Schema(description = "按状态统计")
     private Map<String, Long> byStatus;

@@ -16,6 +16,9 @@ public class SystemConfigResponse {
 
     @Schema(description = "分组")
     private String group;
+
+    @Schema(description = "配置类型")
+    private String type;
 }
 
 

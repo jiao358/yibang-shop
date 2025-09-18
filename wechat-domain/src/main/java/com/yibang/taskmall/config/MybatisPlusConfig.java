@@ -18,15 +18,15 @@ public class MybatisPlusConfig {
 
     /**
      * MyBatis-Plus 拦截器配置
-     * 优化分页查询性能
+     * 注意：不使用分页插件，改为手动分页以提高性能
      */
     @Bean
     public MybatisPlusInterceptor mybatisPlusInterceptor() {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
         
-        // TODO: 分页插件配置 - 根据MyBatis-Plus版本调整
-        // 当前版本可能不支持某些高级配置，使用基础分页功能
-        // 性能优化主要通过SQL优化和索引实现
+        // 移除分页插件，使用手动分页
+        // 手动分页可以更好地控制SQL执行和缓存策略
+        // 性能优化主要通过覆盖索引和手动SQL实现
         
         return interceptor;
     }

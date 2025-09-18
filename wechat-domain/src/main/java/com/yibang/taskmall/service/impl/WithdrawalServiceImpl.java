@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yibang.taskmall.dto.request.WithdrawalRequest;
 import com.yibang.taskmall.dto.response.WithdrawalResponse;
 import com.yibang.taskmall.entity.User;
+import com.yibang.taskmall.entity.Withdrawal;
+import com.yibang.taskmall.mapper.WithdrawalMapper;
 import com.yibang.taskmall.service.WithdrawalService;
 import com.yibang.taskmall.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 public class WithdrawalServiceImpl implements WithdrawalService {
 
     private final UserService userService;
+    private final WithdrawalMapper withdrawalMapper;
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
@@ -71,8 +74,20 @@ public class WithdrawalServiceImpl implements WithdrawalService {
         user.setFrozenBalance(user.getFrozenBalance() + requestAmount);
         userService.updateLoginInfo(user, null, null, null); // 更新用户余额
         
-        // 7. 创建提现记录
-        // TODO: 这里应该创建提现记录到withdrawals表
+        // 7. 创建提现记录到withdrawals表
+        Withdrawal withdrawal = new Withdrawal();
+        withdrawal.setUserId(request.getUserId());
+        withdrawal.setAmount(request.getAmount());
+        withdrawal.setStatus("pending");
+        withdrawal.setCreatedAt(java.time.LocalDateTime.now());
+        
+        int insertResult = withdrawalMapper.insert(withdrawal);
+        if (insertResult <= 0) {
+            throw new RuntimeException("创建提现记录失败");
+        }
+        
+        log.info("创建提现记录成功: withdrawalId={}, userId={}, amount={}", 
+                 withdrawal.getId(), request.getUserId(), request.getAmount());
         
         // 8. 更新Redis缓存（当日提现次数）
         redisTemplate.opsForValue().set(dailyLimitKey, (dailyCount == null ? 0 : dailyCount) + 1, 1, TimeUnit.DAYS);
