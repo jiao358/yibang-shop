@@ -10,6 +10,7 @@ import com.yibang.taskmall.dto.response.WechatUserInfo;
 import com.yibang.taskmall.dto.response.AdminLoginResponse;
 import com.yibang.taskmall.dto.response.AdminUserInfo;
 import com.yibang.taskmall.entity.User;
+import com.yibang.taskmall.hsf.AuthERPService;
 import com.yibang.taskmall.service.AuthService;
 import com.yibang.taskmall.service.UserService;
 import com.yibang.taskmall.service.WechatService;
@@ -47,6 +48,7 @@ public class AuthController {
     private final StringRedisTemplate stringRedisTemplate;
     private final JwtTokenProvider jwtTokenProvider;
     private final ErpIntegrationService erpIntegrationService;
+
 
     private static final String USER_CACHE_KEY_FMT = "user:info:%d";
     private static final long USER_CACHE_TTL_MINUTES = 30; // 用户信息缓存30分钟

@@ -13,7 +13,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * @author yibang
  * @since 2024-01-15
  */
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.yibang.taskmall")
 @MapperScan("com.yibang.taskmall.mapper")
 @EnableFeignClients
 @EnableAsync

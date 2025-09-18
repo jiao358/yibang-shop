@@ -19,12 +19,23 @@ import java.util.Map;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/hsf/time")
+@RequestMapping("/hsf/time")
 @RequiredArgsConstructor
 @Tag(name = "时间工具服务", description = "提供当前时间相关的工具方法")
 public class TimeController {
 
     private final TimeService timeService;
+
+    /**
+     * 简单的测试端点
+     */
+    @GetMapping("/ping")
+    @Operation(summary = "测试端点", description = "简单的ping测试")
+    public Result<String> ping() {
+        log.info("收到ping请求");
+        return Result.success("pong");
+    }
+
 
     /**
      * 获取当前时间

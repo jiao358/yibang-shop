@@ -1,12 +1,18 @@
 package com.yibang.taskmall.service.impl;
 
+import com.yibang.taskmall.common.HSFAPIKey;
+import com.yibang.taskmall.common.Result;
+import com.yibang.taskmall.hsf.AuthERPService;
+import com.yibang.taskmall.hsf.dto.UserAuthRequest;
 import com.yibang.taskmall.service.ErpIntegrationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,31 +27,85 @@ import java.util.Map;
 public class ErpIntegrationServiceImpl implements ErpIntegrationService {
 
     // TODO: 注入ERP系统HTTP客户端或其他集成方式
+    private final AuthERPService authERPService;
+
+    private final HSFAPIKey hsfapiKey;
 
     @Override
     public Map<String, Object> validateUser(String username, String password) {
         log.info("ERP用户验证: username={}", username);
-        
-        // TODO: 实际对接ERP系统SSO验证
-        // 当前返回mock数据
-        Map<String, Object> result = new HashMap<>();
-        
-        if ("admin".equals(username) && "123456".equals(password)) {
-            result.put("success", true);
-            result.put("userId", "ERP_ADMIN_001");
-            result.put("username", username);
-            result.put("name", "系统管理员");
-            result.put("email", "admin@yibang.com");
-            result.put("phone", "13800138000");
-            result.put("department", "信息技术部");
-            result.put("position", "系统管理员");
-            result.put("roles", Arrays.asList("admin", "system_manager"));
-        } else {
+
+        try {
+            // 调用ERP系统进行用户验证
+            UserAuthRequest request = new UserAuthRequest();
+            request.setUsername(username);
+            request.setPassword(password);
+
+            Result<Map<String, Object>> response = authERPService.login(request, hsfapiKey.getApiKeysConfig());
+
+            Map<String, Object> result = new HashMap<>();
+
+            if (response.getCode() == 200 && "登录成功".equals(response.getMessage())) {
+                // 解析ERP返回的用户数据
+                Map<String, Object> responseData = response.getData();
+                if (responseData != null && responseData.containsKey("user")) {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> userData = (Map<String, Object>) responseData.get("user");
+                    
+                    // 提取用户信息
+                    result.put("success", true);
+                    result.put("userId", userData.get("id"));
+                    result.put("username", userData.get("username"));
+                    result.put("name", userData.get("realName"));
+                    result.put("email", userData.get("email"));
+                    result.put("phone", userData.get("phone"));
+                    result.put("roleId", userData.get("roleId"));
+                    result.put("roleName", userData.get("roleName"));
+                    result.put("companyId", userData.get("companyId"));
+                    result.put("companyName", userData.get("companyName"));
+                    result.put("status", userData.get("status"));
+                    result.put("permissions", userData.get("permissions"));
+                    result.put("lastLoginTime", userData.get("lastLoginTime"));
+                    result.put("createdAt", userData.get("createdAt"));
+                    
+                    // 保存ERP token用于后续调用
+                    result.put("erpToken", responseData.get("token"));
+                    
+                    // 根据roleId设置角色列表
+                    Integer roleId = (Integer) userData.get("roleId");
+                    if (roleId != null) {
+                        List<String> roles = new ArrayList<>();
+                        if (roleId == 1) {
+                            roles.add("ADMIN");
+                            roles.add("USER");
+                        } else {
+                            roles.add("USER");
+                        }
+                        result.put("roles", roles);
+                    }
+                    
+                    log.info("ERP用户验证成功: userId={}, username={}, realName={}", 
+                            userData.get("id"), userData.get("username"), userData.get("realName"));
+                } else {
+                    result.put("success", false);
+                    result.put("message", "ERP系统返回数据格式错误");
+                    log.warn("ERP系统返回数据格式错误: {}", responseData);
+                }
+            } else {
+                result.put("success", false);
+                result.put("message", response.getMessage() != null ? response.getMessage() : "ERP系统验证失败");
+                log.warn("ERP用户验证失败: code={}, message={}", response.getCode(), response.getMessage());
+            }
+            
+            return result;
+            
+        } catch (Exception e) {
+            log.error("ERP用户验证异常: username={}", username, e);
+            Map<String, Object> result = new HashMap<>();
             result.put("success", false);
-            result.put("message", "用户名或密码错误");
+            result.put("message", "ERP系统连接异常: " + e.getMessage());
+            return result;
         }
-        
-        return result;
     }
 
     @Override

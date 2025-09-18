@@ -7,6 +7,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import io.jsonwebtoken.Claims;
 import jakarta.annotation.Resource;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,7 +26,8 @@ import java.io.IOException;
  */
 @Slf4j
 @Component
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+@Order(100)
+public class JwtAuthenticationFilter extends OncePerRequestFilter implements Ordered {
 
     @Resource
     private JwtTokenProvider jwtTokenProvider;
@@ -35,6 +38,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         log.debug("JWT认证过滤器处理请求: {}", request.getRequestURI());
 
         try {
+            if( SecurityContextHolder.getContext().getAuthentication()!=null){
+                log.debug("请求已认证，跳过JWT过滤器");
+                filterChain.doFilter(request, response);
+                return;
+            }
+
             String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
             log.debug("Authorization header: {}", authHeader != null ? "Bearer ***" : "null");
             
@@ -79,5 +88,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    @Override
+    public int getOrder() {
+        return 100; // JWT过滤器在API Key过滤器之后执行
     }
 }

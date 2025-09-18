@@ -14,7 +14,6 @@ import java.util.Map;
  * @author yibang
  * @since 2024-01-15
  */
-@FeignClient(name = "yibang-taskmall", path = "/api/hsf/time")
 public interface TimeServiceClient {
 
     /**

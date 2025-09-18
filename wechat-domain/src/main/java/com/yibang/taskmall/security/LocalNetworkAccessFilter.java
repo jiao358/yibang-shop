@@ -21,7 +21,7 @@ import java.util.List;
  * @since 2024-01-15
  */
 @Slf4j
-@Component
+// @Component  // 暂时禁用，使用 API Key 认证
 public class LocalNetworkAccessFilter implements Filter {
 
     @Value("${hsf.security.allowed-networks:192.168.0.0/16,10.0.0.0/8,172.16.0.0/12,127.0.0.1/32}")
