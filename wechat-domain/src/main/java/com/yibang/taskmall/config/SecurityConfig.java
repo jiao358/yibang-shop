@@ -56,6 +56,8 @@ public class SecurityConfig {
                     "/auth/**",
                     "/api/auth/**",
                     "/api/public/**",
+                    "/api/hsf/time/**",  // HSF时间服务免认证
+                    "/hsf/time/**",      // 兼容不同路径
                     "/actuator/**",
                     "/error",
                     "/favicon.ico"

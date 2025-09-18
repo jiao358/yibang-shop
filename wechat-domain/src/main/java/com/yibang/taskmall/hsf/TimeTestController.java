@@ -20,7 +20,7 @@ import java.util.Map;
  */
 @Slf4j
 @RestController
-@RequestMapping("/hsf/test")
+@RequestMapping("/api/hsf/test")
 @RequiredArgsConstructor
 @Tag(name = "时间服务测试", description = "测试HSF时间服务的调用")
 public class TimeTestController {

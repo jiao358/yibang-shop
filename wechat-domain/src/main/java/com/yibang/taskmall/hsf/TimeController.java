@@ -19,7 +19,7 @@ import java.util.Map;
  */
 @Slf4j
 @RestController
-@RequestMapping("/hsf/time")
+@RequestMapping("/api/hsf/time")
 @RequiredArgsConstructor
 @Tag(name = "时间工具服务", description = "提供当前时间相关的工具方法")
 public class TimeController {
