@@ -24,6 +24,43 @@ spring:
         metadata:
           version: 1.0.0
           zone: default-zone
+
+# Feign 配置
+feign:
+  # 启用压缩
+  compression:
+    request:
+      enabled: true
+      mime-types: application/json,application/xml,text/xml,text/plain
+      min-request-size: 2048
+    response:
+      enabled: true
+      useGzipDecoder: true
+  
+  # HTTP客户端配置
+  httpclient:
+    enabled: true
+    max-connections: 50          # 最大连接数（适中）
+    max-connections-per-route: 10 # 每个路由最大连接数
+    connection-timeout: 5000     # 连接超时 5秒
+    connection-timer-repeat: 3000 # 连接定时器重复间隔
+    time-to-live: 900            # 连接存活时间 15分钟
+    follow-redirects: true       # 跟随重定向
+    retry-on-connection-failure: true # 连接失败重试
+  
+  # 客户端配置
+  client:
+    config:
+      default:
+        connect-timeout: 5000    # 连接超时
+        read-timeout: 10000      # 读取超时
+        logger-level: basic      # 日志级别
+
+# HSF 安全配置
+hsf:
+  security:
+    # 允许的网络段（CIDR格式）
+    allowed-networks: 192.168.0.0/16,10.0.0.0/8,172.16.0.0/12,127.0.0.1/32
   
   # Jackson配置
   jackson:

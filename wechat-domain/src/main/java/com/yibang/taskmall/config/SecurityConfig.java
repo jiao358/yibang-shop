@@ -2,6 +2,7 @@ package com.yibang.taskmall.config;
 
 import com.yibang.taskmall.security.JwtAuthenticationEntryPoint;
 import com.yibang.taskmall.security.JwtAuthenticationFilter;
+import com.yibang.taskmall.security.LocalNetworkAccessFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,6 +33,9 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    @Autowired
+    private LocalNetworkAccessFilter localNetworkAccessFilter;
+
     /**
      * 安全过滤器链配置
      */
@@ -57,13 +61,14 @@ public class SecurityConfig {
                     "/api/auth/**",
                     "/api/public/**",
                     "/api/hsf/time/**",  // HSF时间服务免认证
-                    "/hsf/time/**",      // 兼容不同路径
                     "/actuator/**",
                     "/error",
                     "/favicon.ico"
                 ).permitAll()
                 .anyRequest().authenticated()
             )
+            // 添加局域网访问过滤器（在JWT过滤器之前）
+            .addFilterBefore(localNetworkAccessFilter, JwtAuthenticationFilter.class)
             // 添加JWT过滤器
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
